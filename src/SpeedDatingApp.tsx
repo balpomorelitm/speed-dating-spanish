@@ -15,6 +15,7 @@ import {
   categories,
   conversationCards,
   countries,
+  finalCardAsset,
   languages,
   photoCredits,
   residences,
@@ -80,6 +81,7 @@ export default function SpeedDatingApp() {
   const [reaction, setReaction] = useState<ReactionId | null>(null);
   const [cardMotion, setCardMotion] = useState(0);
   const [deckNotice, setDeckNotice] = useState("");
+  const [finaleAnswered, setFinaleAnswered] = useState(false);
   const touchStart = useRef<{ x: number; y: number; blocked: boolean } | null>(null);
 
   const currentCard =
@@ -100,7 +102,9 @@ export default function SpeedDatingApp() {
   );
 
   const goToStep = useCallback((target: number) => {
-    setStep(Math.max(0, Math.min(7, target)));
+    const boundedTarget = Math.max(0, Math.min(7, target));
+    if (boundedTarget !== 7) setFinaleAnswered(false);
+    setStep(boundedTarget);
     setMenuOpen(false);
     setDeckNotice("");
     if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
@@ -165,6 +169,7 @@ export default function SpeedDatingApp() {
     setCategory("all");
     setDeck(makeDeck(conversationCards));
     setReaction(null);
+    setFinaleAnswered(false);
     goToStep(0);
   };
 
@@ -281,15 +286,14 @@ export default function SpeedDatingApp() {
             </LessonHeading>
             <div className="dialogue-layout">
               <div className="teacher-card">
-                <div className="teacher-avatar" aria-hidden="true">P</div>
+                <div className="teacher-avatar waving-hand" aria-hidden="true">👋</div>
                 <span className="role-label">PROFESOR · TEACHER</span>
-                <p>Me llamo Pablo.</p>
-                <strong>Y tú, ¿cómo te llamas?</strong>
+                <p>Me llamo…</p>
+                <strong>¿Cómo te llamas?</strong>
               </div>
               <div className="student-answer coral-card">
                 <span className="role-label">TU TURNO · YOUR TURN</span>
-                <p>Me llamo</p>
-                <div className="answer-line">……………………</div>
+                <p>Me llamo…</p>
                 <span className="speech-sticker" aria-hidden="true">👋</span>
               </div>
             </div>
@@ -302,7 +306,9 @@ export default function SpeedDatingApp() {
               ¿De dónde <mark>eres</mark>?
             </LessonHeading>
             <div className={`live-sentence ${country ? "has-selection" : ""}`}>
-              <span className="sentence-flag" aria-hidden="true">{country?.flag ?? "🌏"}</span>
+              <span className="sentence-flag" aria-hidden="true">
+                {country ? <img src={country.flagImage} alt="" /> : "🌏"}
+              </span>
               <div>
                 <small>MODELO · MODEL</small>
                 <p>Soy de <strong>{country?.name ?? "…"}</strong></p>
@@ -317,7 +323,7 @@ export default function SpeedDatingApp() {
                   onClick={() => setSelectedCountry(item.id)}
                   aria-pressed={selectedCountry === item.id}
                 >
-                  <span className="flag" aria-hidden="true">{item.flag}</span>
+                  <img className="flag" src={item.flagImage} alt={`Bandera de ${item.name}`} />
                   <strong>{item.name}</strong>
                   <small>{item.english}</small>
                 </button>
@@ -336,7 +342,14 @@ export default function SpeedDatingApp() {
               <p>«Hablo español, inglés y un poco de chino.»</p>
             </div>
             <div className="live-sentence language-sentence">
-              <span className="sentence-flag" aria-hidden="true">💬</span>
+              <span className="sentence-flag sentence-language-flags" aria-hidden="true">
+                {selectedLanguages.length === 0
+                  ? "💬"
+                  : selectedLanguages.map((id) => {
+                      const selected = languages.find((language) => language.id === id);
+                      return selected ? <img key={id} src={selected.flagImage} alt="" /> : null;
+                    })}
+              </span>
               <div>
                 <small>ELIGE HASTA 3 · CHOOSE UP TO 3</small>
                 <p>Hablo <strong>{joinSpanish(languageNames)}</strong></p>
@@ -350,7 +363,11 @@ export default function SpeedDatingApp() {
                   onClick={() => toggleLanguage(language.id)}
                   aria-pressed={selectedLanguages.includes(language.id)}
                 >
-                  <span aria-hidden="true">{language.hello}</span>
+                  <img
+                    className="language-flag"
+                    src={language.flagImage}
+                    alt={`Bandera representativa: ${language.flagCountry}`}
+                  />
                   <strong>{language.name}</strong>
                   <small>{language.english}</small>
                 </button>
@@ -497,39 +514,49 @@ export default function SpeedDatingApp() {
         )}
 
         {step === 7 && (
-          <section className="finale-screen">
-            <div className="confetti" aria-hidden="true">
-              {Array.from({ length: 20 }, (_, index) => <i key={index} />)}
-            </div>
-            <div className="finale-photo">
-              <img src="photos/lollipops.jpg" alt="Chupachups de muchos colores" />
+          <section className={`finale-screen ${finaleAnswered ? "is-celebrating" : ""}`}>
+            {finaleAnswered && (
+              <div className="confetti" aria-hidden="true">
+                {Array.from({ length: 20 }, (_, index) => <i key={index} />)}
+              </div>
+            )}
+            <div className="finale-photo finale-brand">
+              <img src={finalCardAsset.image} alt={finalCardAsset.alt} />
               <span className="final-sticker">¡SORPRESA!</span>
             </div>
             <div className="finale-copy">
               <span className="eyebrow"><span>ÚLTIMA TARJETA</span> · LAST CARD</span>
-              <h2>¿Te gustan los <em>chupachups</em>?</h2>
-              <div className="final-answer"><span aria-hidden="true">👍👍</span> Sí, me gustan mucho.</div>
-              <div className="qr-panel">
-                <a href={PROGRAMME_URL} target="_blank" rel="noreferrer" aria-label="Abrir Spanish Programme de HKU">
-                  <QRCodeSVG
-                    value={PROGRAMME_URL}
-                    size={164}
-                    level="H"
-                    bgColor="#fffaf1"
-                    fgColor="#5f0034"
-                    title="QR del Spanish Programme de HKU"
-                  />
-                </a>
-                <div>
-                  <span>DESCUBRE MÁS</span>
-                  <strong>Español en HKU</strong>
-                  <small>Scan to visit our programme</small>
+              <h2>¿Te gustan los <em>Chupa Chups</em>?</h2>
+              {!finaleAnswered ? (
+                <button className="final-answer final-answer-button" onClick={() => setFinaleAnswered(true)}>
+                  <span aria-hidden="true">👍👍</span> Sí, me gustan mucho.
+                </button>
+              ) : (
+                <div className="final-reveal" aria-live="polite">
+                  <div className="final-answer"><span aria-hidden="true">👍👍</span> Sí, me gustan mucho.</div>
+                  <div className="qr-panel">
+                    <a href={PROGRAMME_URL} target="_blank" rel="noreferrer" aria-label="Abrir Spanish Programme de HKU">
+                      <QRCodeSVG
+                        value={PROGRAMME_URL}
+                        size={164}
+                        level="H"
+                        bgColor="#fffaf1"
+                        fgColor="#5f0034"
+                        title="QR del Spanish Programme de HKU"
+                      />
+                    </a>
+                    <div>
+                      <span>DESCUBRE MÁS</span>
+                      <strong>Español en HKU</strong>
+                      <small>Scan to visit our programme</small>
+                    </div>
+                  </div>
+                  <div className="final-actions">
+                    <button className="secondary-button" onClick={() => goToStep(6)}>← Volver a las tarjetas</button>
+                    <button className="primary-button" onClick={reset}>Empezar de nuevo ↻</button>
+                  </div>
                 </div>
-              </div>
-              <div className="final-actions">
-                <button className="secondary-button" onClick={() => goToStep(6)}>← Volver a las tarjetas</button>
-                <button className="primary-button" onClick={reset}>Empezar de nuevo ↻</button>
-              </div>
+              )}
             </div>
           </section>
         )}
@@ -577,9 +604,12 @@ export default function SpeedDatingApp() {
                     <a href={credit.url} target="_blank" rel="noreferrer">{credit.author}</a>
                     {index < photoCredits.length - 1 ? ", " : "."}
                   </span>
-                ))} Unsplash License.
+                ))}
               </p>
             </details>
+            <a className="catalog-link" href="catalogo.html">
+              Catálogo del profesor <span aria-hidden="true">↗</span>
+            </a>
             <button className="reset-link" onClick={reset}>↻ Reiniciar toda la actividad</button>
           </div>
         </div>

@@ -555,6 +555,18 @@ mark {
   transform: rotate(-5deg);
 }
 
+.waving-hand {
+  transform-origin: 70% 80%;
+  animation: wave-hello 1.7s ease-in-out infinite;
+}
+
+@keyframes wave-hello {
+  0%, 100% { transform: rotate(-8deg); }
+  25% { transform: rotate(18deg) scale(1.05); }
+  50% { transform: rotate(-12deg); }
+  75% { transform: rotate(14deg) scale(1.05); }
+}
+
 .role-label,
 .panel-label {
   color: var(--muted);
@@ -634,6 +646,32 @@ mark {
   border-radius: 16px;
   background: #f0e4e9;
   font-size: 50px;
+  overflow: hidden;
+}
+
+.sentence-flag > img {
+  width: 76px;
+  height: 58px;
+  object-fit: cover;
+  border-radius: 10px;
+  box-shadow: 0 2px 7px rgba(37, 22, 31, 0.2);
+}
+
+.sentence-language-flags {
+  display: flex;
+  min-width: 106px;
+  padding: 7px;
+}
+
+.sentence-language-flags > img {
+  width: 52px;
+  height: 39px;
+  margin-right: -22px;
+  border: 2px solid white;
+}
+
+.sentence-language-flags > img:last-child {
+  margin-right: 0;
 }
 
 .live-sentence small {
@@ -710,10 +748,14 @@ mark {
   font-size: 9px;
 }
 
-.flag-grid .flag {
+.flag-grid .flag,
+.language-flag {
   display: block;
-  font-size: 36px;
-  line-height: 1.1;
+  width: 56px;
+  height: 42px;
+  margin: 0 auto 5px;
+  object-fit: cover;
+  border-radius: 7px;
   filter: drop-shadow(0 3px 2px rgba(37, 22, 31, 0.18));
 }
 
@@ -747,13 +789,6 @@ mark {
 
 .language-grid {
   grid-template-columns: repeat(9, minmax(92px, 1fr));
-}
-
-.language-grid button > span {
-  display: block;
-  min-height: 24px;
-  font-size: 17px;
-  font-weight: 850;
 }
 
 .place-grid {
@@ -1026,13 +1061,13 @@ mark {
   right: 20px;
   bottom: 18px;
   display: grid;
-  width: 96px;
-  height: 96px;
+  width: clamp(132px, 13vw, 160px);
+  height: clamp(132px, 13vw, 160px);
   place-items: center;
   border: 4px solid white;
   border-radius: 50%;
   background: var(--yellow);
-  font-size: 54px;
+  font-size: clamp(70px, 7.5vw, 92px);
   filter: drop-shadow(7px 8px 0 rgba(37, 22, 31, 0.4));
   transform: rotate(8deg);
   animation: sticker-wiggle 2.8s ease-in-out infinite;
@@ -1223,6 +1258,26 @@ mark {
   object-fit: cover;
 }
 
+.finale-brand {
+  display: grid;
+  padding: clamp(42px, 7vw, 96px);
+  place-items: center;
+  background:
+    radial-gradient(circle at 20% 20%, rgba(255,255,255,0.75), transparent 26%),
+    var(--yellow);
+}
+
+.finale-brand img {
+  object-fit: contain;
+  filter: drop-shadow(10px 12px 0 rgba(37, 22, 31, 0.13));
+  animation: logo-float 3.2s ease-in-out infinite;
+}
+
+@keyframes logo-float {
+  0%, 100% { transform: translateY(0) rotate(-2deg); }
+  50% { transform: translateY(-14px) rotate(2deg); }
+}
+
 .final-sticker {
   position: absolute;
   right: 5%;
@@ -1264,6 +1319,33 @@ mark {
   font-family: var(--font-display);
   font-size: clamp(18px, 2vw, 27px);
   transform: rotate(-1deg);
+}
+
+.final-answer-button {
+  border: 2px solid var(--ink);
+  color: var(--ink);
+  cursor: pointer;
+  transition: transform 160ms ease, box-shadow 160ms ease;
+}
+
+.final-answer-button:hover,
+.final-answer-button:focus-visible {
+  transform: translateY(-4px) rotate(-1deg) scale(1.02);
+  box-shadow: 8px 10px 0 var(--ink);
+}
+
+.final-answer-button:active {
+  transform: translateY(3px) rotate(-1deg);
+  box-shadow: 3px 3px 0 var(--ink);
+}
+
+.final-reveal {
+  animation: final-reveal 480ms cubic-bezier(0.2, 1.35, 0.5, 1) both;
+}
+
+@keyframes final-reveal {
+  from { opacity: 0; transform: translateY(18px) scale(0.97); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 .final-answer span {
@@ -1526,6 +1608,22 @@ mark {
   cursor: pointer;
 }
 
+.catalog-link {
+  display: inline-flex;
+  min-height: 46px;
+  margin-top: 12px;
+  padding: 0 16px;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: rgba(255, 250, 242, 0.72);
+  color: var(--burgundy);
+  font-size: 12px;
+  font-weight: 800;
+  text-decoration: none;
+}
+
 @media (max-width: 1100px) {
   .topbar { grid-template-columns: 165px minmax(0, 1fr) 56px; gap: 12px; }
   .progress button small { display: none; }
@@ -1590,6 +1688,7 @@ mark {
   .lollipop-button small { display: none; }
   .prompt-card { grid-template-columns: 1fr; }
   .photo-wrap { min-height: 250px; }
+  .item-sticker { width: 120px; height: 120px; font-size: 68px; }
   .prompt-copy { padding: 25px; }
   .prompt-copy h3 { font-size: 36px; }
   .bottom-nav { grid-template-columns: 1fr 1fr; min-height: 76px; padding: 8px 12px 11px; }

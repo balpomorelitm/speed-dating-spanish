@@ -16,7 +16,11 @@ export type Category = {
   image: string;
   color: string;
   alt: string;
+  photoCredit: string;
+  photoSource: string;
 };
+
+export type ImageKind = "specific" | "category";
 
 export type ConversationCard = {
   id: string;
@@ -27,26 +31,37 @@ export type ConversationCard = {
   image: string;
   sticker: string;
   alt: string;
+  imageKind: ImageKind;
+  photoCredit: string;
+  photoSource: string;
 };
 
 export type Country = {
   id: string;
   name: string;
   english: string;
-  flag: string;
+  flagImage: string;
 };
 
 export type Language = {
   id: string;
   name: string;
   english: string;
-  hello: string;
+  flagImage: string;
+  flagCountry: string;
 };
 
 export type Residence = {
   id: string;
   name: string;
   emoji: string;
+};
+
+export type ContentChange = {
+  id: string;
+  action: "quitada" | "cambiada";
+  before: string;
+  after?: string;
 };
 
 export const categories: Category[] = [
@@ -58,6 +73,8 @@ export const categories: Category[] = [
     image: "photos/hobbies.jpg",
     color: "#ff6b5b",
     alt: "Objetos de viaje y aficiones vistos desde arriba",
+    photoCredit: "Thomas Martinsen · Unsplash",
+    photoSource: "https://unsplash.com/photos/CrnALaUMSA4",
   },
   {
     id: "sports",
@@ -67,6 +84,8 @@ export const categories: Category[] = [
     image: "photos/sports.jpg",
     color: "#4ca866",
     alt: "Un balón de fútbol sobre el césped",
+    photoCredit: "Souza Sergio · Unsplash",
+    photoSource: "https://unsplash.com/photos/MVNSFzkaxOE",
   },
   {
     id: "food",
@@ -76,6 +95,8 @@ export const categories: Category[] = [
     image: "photos/food.jpg",
     color: "#f29d38",
     alt: "Una mesa con diferentes platos de comida asiática",
+    photoCredit: "Hailey Tong · Unsplash",
+    photoSource: "https://unsplash.com/photos/_stQKOlfl7M",
   },
   {
     id: "drinks",
@@ -85,6 +106,8 @@ export const categories: Category[] = [
     image: "photos/drinks.jpg",
     color: "#8f63ce",
     alt: "Una bebida cremosa con perlas de tapioca",
+    photoCredit: "Najib Chari · Unsplash",
+    photoSource: "https://unsplash.com/photos/AL3uWJvhfWE",
   },
   {
     id: "places",
@@ -94,6 +117,8 @@ export const categories: Category[] = [
     image: "photos/places.jpg",
     color: "#20a7bd",
     alt: "Vista de Hong Kong desde Victoria Peak",
+    photoCredit: "Christian Lendl · Unsplash",
+    photoSource: "https://unsplash.com/photos/Oq6Ng641xTc",
   },
   {
     id: "campus",
@@ -103,12 +128,68 @@ export const categories: Category[] = [
     image: "photos/campus.jpg",
     color: "#7a003c",
     alt: "Un grupo diverso de estudiantes trabajando juntos",
+    photoCredit: "Vitaly Gariev · Unsplash",
+    photoSource: "https://unsplash.com/photos/kp7qkHTgSKc",
   },
 ];
 
 const categoryById = Object.fromEntries(
   categories.map((category) => [category.id, category]),
 ) as Record<CategoryId, Category>;
+
+const specificPhotos: Record<
+  string,
+  Pick<ConversationCard, "image" | "alt" | "photoCredit" | "photoSource">
+> = {
+  cake: {
+    image: "photos/cards/cake.webp",
+    alt: "Una porción grande de tarta de chocolate con trozos de chocolate",
+    photoCredit: "K8 · Unsplash",
+    photoSource: "https://unsplash.com/photos/q5kN-wNzQDM",
+  },
+  "watch-football": {
+    image: "photos/cards/watch-football.webp",
+    alt: "Un joven viendo un partido de fútbol en la televisión",
+    photoCredit: "khezez · Pexels",
+    photoSource: "https://www.pexels.com/photo/man-watching-soccer-match-intently-indoors-36799150/",
+  },
+  paella: {
+    image: "photos/cards/paella.webp",
+    alt: "Una paella grande con arroz, gambas y mejillones",
+    photoCredit: "Rook of Arts · Unsplash",
+    photoSource: "https://unsplash.com/photos/3hVU03NA4q0",
+  },
+  "dim-sum": {
+    image: "photos/cards/dim-sum.webp",
+    alt: "Varias piezas de dim sum servidas en una bandeja",
+    photoCredit: "Keji Gao · Unsplash",
+    photoSource: "https://unsplash.com/photos/s22ALHSKeys",
+  },
+  tortilla: {
+    image: "photos/cards/tortilla.webp",
+    alt: "Una porción de tortilla española con patata",
+    photoCredit: "MikeGz · Pexels",
+    photoSource: "https://www.pexels.com/photo/photo-of-a-piece-of-spanish-omelette-14941247/",
+  },
+  churros: {
+    image: "photos/cards/churros.webp",
+    alt: "Churros con azúcar acompañados de chocolate",
+    photoCredit: "Pixabay · Pexels",
+    photoSource: "https://www.pexels.com/photo/churos-with-chocolate-dip-372886/",
+  },
+  cinema: {
+    image: "photos/cards/cinema.webp",
+    alt: "Filas de butacas rojas en una sala de cine",
+    photoCredit: "Tima Miroshnichenko · Pexels",
+    photoSource: "https://www.pexels.com/photo/empty-movie-theater-seats-7991303/",
+  },
+  "hot-water": {
+    image: "photos/cards/hot-water.webp",
+    alt: "Agua caliente y humeante vertida desde una tetera en una taza",
+    photoCredit: "Jahra Tasfia Reza · Pexels",
+    photoSource: "https://www.pexels.com/photo/steaming-hot-tea-being-poured-into-cup-indoors-36959434/",
+  },
+};
 
 const card = (
   id: string,
@@ -123,9 +204,12 @@ const card = (
   label,
   english,
   number,
-  image: categoryById[category].image,
+  image: specificPhotos[id]?.image ?? categoryById[category].image,
   sticker,
-  alt: categoryById[category].alt,
+  alt: specificPhotos[id]?.alt ?? categoryById[category].alt,
+  imageKind: specificPhotos[id] ? "specific" : "category",
+  photoCredit: specificPhotos[id]?.photoCredit ?? categoryById[category].photoCredit,
+  photoSource: specificPhotos[id]?.photoSource ?? categoryById[category].photoSource,
 });
 
 export const conversationCards: ConversationCard[] = [
@@ -143,13 +227,12 @@ export const conversationCards: ConversationCard[] = [
   card("games", "hobbies", "jugar a videojuegos", "playing video games", "🎮"),
 
   card("play-football", "sports", "jugar al fútbol", "playing football", "⚽"),
-  card("watch-football", "sports", "ver el fútbol", "watching football", "📣"),
+  card("watch-football", "sports", "ver el fútbol", "watching football", "👀⚽"),
   card("tennis", "sports", "jugar al tenis", "playing tennis", "🎾"),
   card("basketball", "sports", "jugar al baloncesto", "playing basketball", "🏀"),
   card("swim", "sports", "nadar", "swimming", "🏊"),
   card("run", "sports", "correr", "running", "🏃"),
   card("cycle", "sports", "montar en bicicleta", "cycling", "🚲"),
-  card("hike", "sports", "hacer senderismo", "hiking", "🥾"),
 
   card("cake", "food", "la tarta de chocolate", "chocolate cake", "🍰"),
   card("noodles", "food", "los noodles / fideos", "noodles", "🍜", "plural"),
@@ -162,7 +245,6 @@ export const conversationCards: ConversationCard[] = [
   card("tacos", "food", "los tacos", "tacos", "🌮", "plural"),
   card("tortilla", "food", "la tortilla española", "Spanish omelette", "🍳"),
   card("churros", "food", "los churros", "churros", "🥨", "plural"),
-  card("empanadas", "food", "las empanadas", "empanadas", "🥟", "plural"),
   card("ice-cream", "food", "el helado", "ice cream", "🍦"),
 
   card("bubble-tea", "drinks", "el bubble tea", "bubble tea", "🧋"),
@@ -170,7 +252,7 @@ export const conversationCards: ConversationCard[] = [
   card("coffee", "drinks", "el café", "coffee", "☕"),
   card("orange-juice", "drinks", "el zumo de naranja", "orange juice", "🍊"),
   card("hot-chocolate", "drinks", "el chocolate caliente", "hot chocolate", "🍫"),
-  card("sparkling-water", "drinks", "el agua con gas", "sparkling water", "💧"),
+  card("hot-water", "drinks", "el agua caliente", "hot water", "♨️"),
 
   card("beach", "places", "la playa", "the beach", "🏖️"),
   card("mountains", "places", "la montaña", "the mountains", "⛰️"),
@@ -185,52 +267,56 @@ export const conversationCards: ConversationCard[] = [
   card("study-spanish", "campus", "estudiar español", "studying Spanish", "🇪🇸"),
   card("learn-languages", "campus", "aprender idiomas", "learning languages", "💬"),
   card("friends", "campus", "hacer amigos", "making friends", "🤝"),
-  card("group-work", "campus", "trabajar en grupo", "group work", "🧩"),
-  card("library", "campus", "ir a la biblioteca", "going to the library", "📖"),
+  card("study", "campus", "estudiar", "studying", "📖"),
   card("clubs", "campus", "participar en clubes", "joining clubs", "🎭"),
-  card("exchange", "campus", "hacer un intercambio", "going on exchange", "🌍"),
 ];
 
+const flagPath = (code: string) => `flags/${code}.svg`;
+
 export const countries: Country[] = [
-  { id: "hong-kong", name: "Hong Kong", english: "Hong Kong", flag: "🇭🇰" },
-  { id: "china", name: "China", english: "Mainland China", flag: "🇨🇳" },
-  { id: "macao", name: "Macao", english: "Macao", flag: "🇲🇴" },
-  { id: "taiwan", name: "Taiwán", english: "Taiwan", flag: "🇹🇼" },
-  { id: "japan", name: "Japón", english: "Japan", flag: "🇯🇵" },
-  { id: "korea", name: "Corea del Sur", english: "South Korea", flag: "🇰🇷" },
-  { id: "philippines", name: "Filipinas", english: "Philippines", flag: "🇵🇭" },
-  { id: "vietnam", name: "Vietnam", english: "Vietnam", flag: "🇻🇳" },
-  { id: "thailand", name: "Tailandia", english: "Thailand", flag: "🇹🇭" },
-  { id: "malaysia", name: "Malasia", english: "Malaysia", flag: "🇲🇾" },
-  { id: "singapore", name: "Singapur", english: "Singapore", flag: "🇸🇬" },
-  { id: "indonesia", name: "Indonesia", english: "Indonesia", flag: "🇮🇩" },
-  { id: "india", name: "India", english: "India", flag: "🇮🇳" },
-  { id: "bangladesh", name: "Bangladés", english: "Bangladesh", flag: "🇧🇩" },
-  { id: "pakistan", name: "Pakistán", english: "Pakistan", flag: "🇵🇰" },
-  { id: "nepal", name: "Nepal", english: "Nepal", flag: "🇳🇵" },
-  { id: "sri-lanka", name: "Sri Lanka", english: "Sri Lanka", flag: "🇱🇰" },
-  { id: "kazakhstan", name: "Kazajistán", english: "Kazakhstan", flag: "🇰🇿" },
+  { id: "hong-kong", name: "Hong Kong", english: "Hong Kong", flagImage: flagPath("hk") },
+  { id: "china", name: "China", english: "Mainland China", flagImage: flagPath("cn") },
+  { id: "macao", name: "Macao", english: "Macao", flagImage: flagPath("mo") },
+  { id: "taiwan", name: "Taiwán", english: "Taiwan", flagImage: flagPath("tw") },
+  { id: "japan", name: "Japón", english: "Japan", flagImage: flagPath("jp") },
+  { id: "korea", name: "Corea del Sur", english: "South Korea", flagImage: flagPath("kr") },
+  { id: "philippines", name: "Filipinas", english: "Philippines", flagImage: flagPath("ph") },
+  { id: "vietnam", name: "Vietnam", english: "Vietnam", flagImage: flagPath("vn") },
+  { id: "thailand", name: "Tailandia", english: "Thailand", flagImage: flagPath("th") },
+  { id: "malaysia", name: "Malasia", english: "Malaysia", flagImage: flagPath("my") },
+  { id: "singapore", name: "Singapur", english: "Singapore", flagImage: flagPath("sg") },
+  { id: "indonesia", name: "Indonesia", english: "Indonesia", flagImage: flagPath("id") },
+  { id: "india", name: "India", english: "India", flagImage: flagPath("in") },
+  { id: "bangladesh", name: "Bangladés", english: "Bangladesh", flagImage: flagPath("bd") },
+  { id: "pakistan", name: "Pakistán", english: "Pakistan", flagImage: flagPath("pk") },
+  { id: "nepal", name: "Nepal", english: "Nepal", flagImage: flagPath("np") },
+  { id: "sri-lanka", name: "Sri Lanka", english: "Sri Lanka", flagImage: flagPath("lk") },
+  { id: "kazakhstan", name: "Kazajistán", english: "Kazakhstan", flagImage: flagPath("kz") },
 ];
 
 export const languages: Language[] = [
-  { id: "spanish", name: "español", english: "Spanish", hello: "¡Hola!" },
-  { id: "english", name: "inglés", english: "English", hello: "Hello!" },
-  { id: "cantonese", name: "cantonés", english: "Cantonese", hello: "你好!" },
-  { id: "mandarin", name: "mandarín", english: "Mandarin", hello: "你好!" },
-  { id: "japanese", name: "japonés", english: "Japanese", hello: "こんにちは!" },
-  { id: "korean", name: "coreano", english: "Korean", hello: "안녕하세요!" },
-  { id: "filipino", name: "filipino / tagalo", english: "Filipino / Tagalog", hello: "Kumusta!" },
-  { id: "vietnamese", name: "vietnamita", english: "Vietnamese", hello: "Xin chào!" },
-  { id: "thai", name: "tailandés", english: "Thai", hello: "สวัสดี!" },
-  { id: "indonesian", name: "indonesio", english: "Indonesian", hello: "Halo!" },
-  { id: "malay", name: "malayo", english: "Malay", hello: "Hai!" },
-  { id: "hindi", name: "hindi", english: "Hindi", hello: "नमस्ते!" },
-  { id: "bengali", name: "bengalí", english: "Bengali", hello: "নমস্কার!" },
-  { id: "urdu", name: "urdu", english: "Urdu", hello: "سلام!" },
-  { id: "nepali", name: "nepalí", english: "Nepali", hello: "नमस्ते!" },
-  { id: "tamil", name: "tamil", english: "Tamil", hello: "வணக்கம்!" },
-  { id: "kazakh", name: "kazajo", english: "Kazakh", hello: "Сәлем!" },
-  { id: "russian", name: "ruso", english: "Russian", hello: "Привет!" },
+  { id: "spanish", name: "español", english: "Spanish", flagImage: flagPath("es"), flagCountry: "España" },
+  { id: "english", name: "inglés", english: "English", flagImage: flagPath("gb"), flagCountry: "Reino Unido" },
+  { id: "cantonese", name: "cantonés", english: "Cantonese", flagImage: flagPath("hk"), flagCountry: "Hong Kong" },
+  { id: "mandarin", name: "mandarín", english: "Mandarin", flagImage: flagPath("cn"), flagCountry: "China" },
+  { id: "japanese", name: "japonés", english: "Japanese", flagImage: flagPath("jp"), flagCountry: "Japón" },
+  { id: "korean", name: "coreano", english: "Korean", flagImage: flagPath("kr"), flagCountry: "Corea del Sur" },
+  { id: "filipino", name: "filipino / tagalo", english: "Filipino / Tagalog", flagImage: flagPath("ph"), flagCountry: "Filipinas" },
+  { id: "vietnamese", name: "vietnamita", english: "Vietnamese", flagImage: flagPath("vn"), flagCountry: "Vietnam" },
+  { id: "thai", name: "tailandés", english: "Thai", flagImage: flagPath("th"), flagCountry: "Tailandia" },
+  { id: "indonesian", name: "indonesio", english: "Indonesian", flagImage: flagPath("id"), flagCountry: "Indonesia" },
+  { id: "malay", name: "malayo", english: "Malay", flagImage: flagPath("my"), flagCountry: "Malasia" },
+  { id: "hindi", name: "hindi", english: "Hindi", flagImage: flagPath("in"), flagCountry: "India" },
+  { id: "bengali", name: "bengalí", english: "Bengali", flagImage: flagPath("bd"), flagCountry: "Bangladés" },
+  { id: "urdu", name: "urdu", english: "Urdu", flagImage: flagPath("pk"), flagCountry: "Pakistán" },
+  { id: "nepali", name: "nepalí", english: "Nepali", flagImage: flagPath("np"), flagCountry: "Nepal" },
+  { id: "tamil", name: "tamil", english: "Tamil", flagImage: flagPath("in"), flagCountry: "India" },
+  { id: "kazakh", name: "kazajo", english: "Kazakh", flagImage: flagPath("kz"), flagCountry: "Kazajistán" },
+  { id: "russian", name: "ruso", english: "Russian", flagImage: flagPath("ru"), flagCountry: "Rusia" },
+  { id: "french", name: "francés", english: "French", flagImage: flagPath("fr"), flagCountry: "Francia" },
+  { id: "german", name: "alemán", english: "German", flagImage: flagPath("de"), flagCountry: "Alemania" },
+  { id: "italian", name: "italiano", english: "Italian", flagImage: flagPath("it"), flagCountry: "Italia" },
+  { id: "portuguese", name: "portugués", english: "Portuguese", flagImage: flagPath("pt"), flagCountry: "Portugal" },
 ];
 
 export const residences: Residence[] = [
@@ -255,6 +341,23 @@ export const residences: Residence[] = [
   { id: "other", name: "otro lugar", emoji: "📍" },
 ];
 
+export const contentChanges: ContentChange[] = [
+  { id: "hike", action: "quitada", before: "hacer senderismo" },
+  { id: "empanadas", action: "quitada", before: "las empanadas" },
+  { id: "group-work", action: "quitada", before: "trabajar en grupo" },
+  { id: "exchange", action: "quitada", before: "hacer un intercambio" },
+  { id: "library", action: "cambiada", before: "ir a la biblioteca", after: "estudiar" },
+  { id: "sparkling-water", action: "cambiada", before: "el agua con gas", after: "el agua caliente" },
+];
+
+export const finalCardAsset = {
+  id: "chupa-chups",
+  image: "brand/chupa-chups.svg",
+  alt: "Logotipo de Chupa Chups",
+  photoCredit: "Chupa Chups · Wikimedia Commons",
+  photoSource: "https://commons.wikimedia.org/wiki/File:Chupa_Chups_logo.svg",
+};
+
 export const photoCredits = [
   { file: "hobbies.jpg", author: "Thomas Martinsen", url: "https://unsplash.com/photos/CrnALaUMSA4" },
   { file: "sports.jpg", author: "Souza Sergio", url: "https://unsplash.com/photos/MVNSFzkaxOE" },
@@ -262,5 +365,18 @@ export const photoCredits = [
   { file: "drinks.jpg", author: "Najib Chari", url: "https://unsplash.com/photos/AL3uWJvhfWE" },
   { file: "places.jpg", author: "Christian Lendl", url: "https://unsplash.com/photos/Oq6Ng641xTc" },
   { file: "campus.jpg", author: "Vitaly Gariev", url: "https://unsplash.com/photos/kp7qkHTgSKc" },
-  { file: "lollipops.jpg", author: "Jamie Albright", url: "https://unsplash.com/photos/dnMLdR814aA" },
+  { file: "cake.webp", author: "K8 · Unsplash", url: "https://unsplash.com/photos/q5kN-wNzQDM" },
+  { file: "dim-sum.webp", author: "Keji Gao · Unsplash", url: "https://unsplash.com/photos/s22ALHSKeys" },
+  { file: "paella.webp", author: "Rook of Arts · Unsplash", url: "https://unsplash.com/photos/3hVU03NA4q0" },
+  { file: "tortilla.webp", author: "MikeGz · Pexels", url: "https://www.pexels.com/photo/photo-of-a-piece-of-spanish-omelette-14941247/" },
+  { file: "churros.webp", author: "Pixabay · Pexels", url: "https://www.pexels.com/photo/churos-with-chocolate-dip-372886/" },
+  { file: "cinema.webp", author: "Tima Miroshnichenko · Pexels", url: "https://www.pexels.com/photo/empty-movie-theater-seats-7991303/" },
+  { file: "watch-football.webp", author: "khezez · Pexels", url: "https://www.pexels.com/photo/man-watching-soccer-match-intently-indoors-36799150/" },
+  { file: "hot-water.webp", author: "Jahra Tasfia Reza · Pexels", url: "https://www.pexels.com/photo/steaming-hot-tea-being-poured-into-cup-indoors-36959434/" },
 ];
+
+export const flagCredit = {
+  author: "Flag Icons",
+  url: "https://github.com/lipis/flag-icons",
+  license: "MIT",
+};
