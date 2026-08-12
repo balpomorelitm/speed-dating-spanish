@@ -24,6 +24,7 @@ import {
 } from "./data/content";
 
 const PROGRAMME_URL = "https://spanish.hku.hk/";
+const INSTAGRAM_URL = "https://www.instagram.com/spanishprogramme_hku/";
 
 const stepLabels = [
   "Inicio",
@@ -547,21 +548,43 @@ export default function SpeedDatingApp() {
               ) : (
                 <div className="final-reveal" aria-live="polite">
                   <div className="final-answer"><span aria-hidden="true">👍👍</span> Sí, me gustan mucho.</div>
-                  <div className="qr-panel">
-                    <a href={PROGRAMME_URL} target="_blank" rel="noreferrer" aria-label="Abrir Spanish Programme de HKU">
-                      <QRCodeSVG
-                        value={PROGRAMME_URL}
-                        size={164}
-                        level="H"
-                        bgColor="#fffaf1"
-                        fgColor="#5f0034"
-                        title="QR del Spanish Programme de HKU"
-                      />
-                    </a>
-                    <div>
-                      <span>DESCUBRE MÁS</span>
-                      <strong>Español en HKU</strong>
-                      <small>Scan to visit our programme</small>
+                  <div className="qr-grid">
+                    <div className="qr-panel">
+                      <a href={PROGRAMME_URL} target="_blank" rel="noreferrer" aria-label="Abrir Spanish Programme de HKU">
+                        <QRCodeSVG
+                          value={PROGRAMME_URL}
+                          size={148}
+                          level="H"
+                          bgColor="#fffaf1"
+                          fgColor="#5f0034"
+                          title="QR del Spanish Programme de HKU"
+                        />
+                      </a>
+                      <div>
+                        <span>DESCUBRE MÁS</span>
+                        <strong>Español en HKU</strong>
+                        <small>Scan to visit our programme</small>
+                      </div>
+                    </div>
+                    <div className="qr-panel instagram-panel">
+                      <a href={INSTAGRAM_URL} target="_blank" rel="noreferrer" aria-label="Abrir Instagram de Spanish Programme HKU">
+                        <QRCodeSVG
+                          value={INSTAGRAM_URL}
+                          size={148}
+                          level="H"
+                          bgColor="#ffffff"
+                          fgColor="#74105e"
+                          title="QR del Instagram de Spanish Programme HKU"
+                        />
+                      </a>
+                      <div>
+                        <div className="instagram-title">
+                          <span className="instagram-mark" aria-hidden="true"><i /></span>
+                          <strong>Instagram</strong>
+                        </div>
+                        <span>SÍGUENOS · FOLLOW US</span>
+                        <small>@spanishprogramme_hku</small>
+                      </div>
                     </div>
                   </div>
                   <div className="final-actions">

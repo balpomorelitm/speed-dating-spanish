@@ -17,6 +17,7 @@ import {
 
 const STORAGE_KEY = "speedDatingReviewV1";
 const PROGRAMME_URL = "https://spanish.hku.hk/";
+const INSTAGRAM_URL = "https://www.instagram.com/spanishprogramme_hku/";
 
 type SectionId = "cards" | "countries" | "languages" | "final";
 type Decision = "approved" | "change" | "remove";
@@ -339,9 +340,21 @@ export default function CatalogApp() {
             <article className="final-preview after">
               <span className="preview-label">DESPUÉS DE PULSAR</span>
               <div className="preview-confetti" aria-hidden="true">◆ ● ■ ◆ ●</div>
-              <div className="preview-qr">
-                <QRCodeSVG value={PROGRAMME_URL} size={132} level="H" title="QR de Español en HKU" />
-                <div><strong>Descubre Español en HKU</strong><small>Confeti, QR y botones finales</small></div>
+              <div className="preview-qr-stack">
+                <div className="preview-qr">
+                  <QRCodeSVG value={PROGRAMME_URL} size={132} level="H" title="QR de Español en HKU" />
+                  <div><strong>Descubre Español en HKU</strong><small>Visita la web del programa</small></div>
+                </div>
+                <div className="preview-qr instagram">
+                  <QRCodeSVG value={INSTAGRAM_URL} size={132} level="H" fgColor="#74105e" title="QR del Instagram de Spanish Programme HKU" />
+                  <div>
+                    <div className="preview-instagram-title">
+                      <span className="instagram-mark" aria-hidden="true"><i /></span>
+                      <strong>Instagram</strong>
+                    </div>
+                    <small>@spanishprogramme_hku</small>
+                  </div>
+                </div>
               </div>
               <div className="preview-buttons"><span>Volver a las tarjetas</span><span>Empezar de nuevo</span></div>
             </article>

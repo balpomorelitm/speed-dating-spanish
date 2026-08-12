@@ -21,10 +21,13 @@ test("the complete guided sequence and finale are present", () => {
     assert.ok(app.includes(phrase), `missing phrase: ${phrase}`);
   }
   assert.match(app, /https:\/\/spanish\.hku\.hk\//);
+  assert.match(app, /https:\/\/www\.instagram\.com\/spanishprogramme_hku\//);
   assert.doesNotMatch(app, /Me llamo Pablo/);
   assert.match(app, /finaleAnswered &&/);
   assert.match(app, /catalogo\.html/);
   assert.match(app, /className="finale-visual"/);
+  assert.match(app, /instagram-panel/);
+  assert.match(catalogApp, /preview-qr instagram/);
 });
 
 test("the catalogue includes all categories and both grammar numbers", () => {

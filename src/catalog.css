@@ -460,11 +460,15 @@ body:has(.catalog-shell) {
 .final-preview h3 { margin: 15px 0; color: var(--burgundy); font-family: var(--font-display); font-size: clamp(27px, 3vw, 44px); }
 .final-preview > button { min-height: 58px; padding: 0 19px; border: 2px solid var(--ink); border-radius: 16px; background: white; font-weight: 850; box-shadow: 5px 6px 0 var(--ink); }
 .preview-confetti { position: absolute; inset: 58px 20px auto; color: var(--yellow); font-size: 33px; letter-spacing: 0.6em; }
-.preview-qr { display: flex; padding: 20px; align-items: center; gap: 20px; border: 2px solid var(--ink); border-radius: 22px; background: var(--paper); text-align: left; }
+.preview-qr-stack { display: grid; width: min(620px, 100%); gap: 12px; }
+.preview-qr { display: flex; padding: 16px; align-items: center; gap: 18px; border: 2px solid var(--ink); border-radius: 22px; background: var(--paper); text-align: left; }
 .preview-qr svg { padding: 6px; flex: 0 0 auto; border-radius: 10px; background: white; }
 .preview-qr strong, .preview-qr small { display: block; }
 .preview-qr strong { color: var(--burgundy); font-family: var(--font-display); font-size: 26px; }
 .preview-qr small { margin-top: 6px; color: var(--muted); }
+.preview-qr.instagram { border-color: #9d2379; background: linear-gradient(135deg, #fff2dd, #f6d9ee); }
+.preview-instagram-title { display: flex; align-items: center; gap: 10px; }
+.preview-instagram-title strong { margin: 0; }
 .preview-buttons { display: flex; gap: 8px; margin-top: 18px; flex-wrap: wrap; justify-content: center; }
 .preview-buttons span { padding: 12px 15px; border: 2px solid var(--ink); border-radius: 13px; background: white; font-size: 11px; font-weight: 850; }
 
