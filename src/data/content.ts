@@ -30,6 +30,7 @@ export type ConversationCard = {
   number: GrammarNumber;
   image: string;
   sticker: string;
+  stickerImages?: string[];
   alt: string;
   imageKind: ImageKind;
   photoCredit: string;
@@ -147,12 +148,6 @@ const specificPhotos: Record<
     photoCredit: "K8 · Unsplash",
     photoSource: "https://unsplash.com/photos/q5kN-wNzQDM",
   },
-  "watch-football": {
-    image: "photos/cards/watch-football.webp",
-    alt: "Un joven viendo un partido de fútbol en la televisión",
-    photoCredit: "khezez · Pexels",
-    photoSource: "https://www.pexels.com/photo/man-watching-soccer-match-intently-indoors-36799150/",
-  },
   paella: {
     image: "photos/cards/paella.webp",
     alt: "Una paella grande con arroz, gambas y mejillones",
@@ -189,6 +184,29 @@ const specificPhotos: Record<
     photoCredit: "Jahra Tasfia Reza · Pexels",
     photoSource: "https://www.pexels.com/photo/steaming-hot-tea-being-poured-into-cup-indoors-36959434/",
   },
+  "orange-juice": {
+    image: "photos/cards/orange-juice.webp",
+    alt: "Un vaso de zumo de naranja recién exprimido junto a varias naranjas",
+    photoCredit: "Umut Dağlı · Pexels",
+    photoSource: "https://www.pexels.com/photo/orange-juice-in-clear-drinking-glass-12896835/",
+  },
+  "hot-chocolate": {
+    image: "photos/cards/hot-chocolate.webp",
+    alt: "Una taza naranja de chocolate caliente con malvaviscos",
+    photoCredit: "Polina Tankilevitch · Pexels",
+    photoSource: "https://www.pexels.com/photo/hot-chocolate-with-marshmallows-in-mug-5419231/",
+  },
+  "theme-parks": {
+    image: "photos/cards/theme-parks.webp",
+    alt: "El Castillo de los Sueños Mágicos de Hong Kong Disneyland",
+    photoCredit: "NNNH · Wikimedia Commons · CC BY-SA 4.0",
+    photoSource: "https://commons.wikimedia.org/wiki/File:Hong_Kong_Disneyland_Castle_in_2024-08.jpg",
+  },
+};
+
+const stickerImages: Partial<Record<string, string[]>> = {
+  "study-spanish": ["flags/es.svg"],
+  "learn-languages": ["flags/es.svg", "flags/gb.svg", "flags/cn.svg", "flags/fr.svg"],
 };
 
 const card = (
@@ -206,6 +224,7 @@ const card = (
   number,
   image: specificPhotos[id]?.image ?? categoryById[category].image,
   sticker,
+  stickerImages: stickerImages[id],
   alt: specificPhotos[id]?.alt ?? categoryById[category].alt,
   imageKind: specificPhotos[id] ? "specific" : "category",
   photoCredit: specificPhotos[id]?.photoCredit ?? categoryById[category].photoCredit,
@@ -227,14 +246,13 @@ export const conversationCards: ConversationCard[] = [
   card("games", "hobbies", "jugar a videojuegos", "playing video games", "🎮"),
 
   card("play-football", "sports", "jugar al fútbol", "playing football", "⚽"),
-  card("watch-football", "sports", "ver el fútbol", "watching football", "👀⚽"),
   card("tennis", "sports", "jugar al tenis", "playing tennis", "🎾"),
   card("basketball", "sports", "jugar al baloncesto", "playing basketball", "🏀"),
   card("swim", "sports", "nadar", "swimming", "🏊"),
   card("run", "sports", "correr", "running", "🏃"),
   card("cycle", "sports", "montar en bicicleta", "cycling", "🚲"),
 
-  card("cake", "food", "la tarta de chocolate", "chocolate cake", "🍰"),
+  card("cake", "food", "la tarta de chocolate", "chocolate cake", ""),
   card("noodles", "food", "los noodles / fideos", "noodles", "🍜", "plural"),
   card("rice", "food", "el arroz", "rice", "🍚"),
   card("fried-rice", "food", "el arroz frito", "fried rice", "🥡"),
@@ -243,8 +261,8 @@ export const conversationCards: ConversationCard[] = [
   card("sushi", "food", "el sushi", "sushi", "🍣"),
   card("pizza", "food", "la pizza", "pizza", "🍕"),
   card("tacos", "food", "los tacos", "tacos", "🌮", "plural"),
-  card("tortilla", "food", "la tortilla española", "Spanish omelette", "🍳"),
-  card("churros", "food", "los churros", "churros", "🥨", "plural"),
+  card("tortilla", "food", "la tortilla española", "Spanish omelette", ""),
+  card("churros", "food", "los churros", "churros", "", "plural"),
   card("ice-cream", "food", "el helado", "ice cream", "🍦"),
 
   card("bubble-tea", "drinks", "el bubble tea", "bubble tea", "🧋"),
@@ -262,19 +280,19 @@ export const conversationCards: ConversationCard[] = [
   card("victoria-peak", "places", "Victoria Peak", "Victoria Peak", "🌃"),
   card("cantopop", "places", "el Cantopop", "Cantopop", "🎶"),
   card("kpop", "places", "el K-pop", "K-pop", "✨"),
-  card("latin-music", "places", "la música latina", "Latin music", "🪇"),
+  card("latin-music", "places", "la música", "music", "🎶"),
 
-  card("study-spanish", "campus", "estudiar español", "studying Spanish", "🇪🇸"),
-  card("learn-languages", "campus", "aprender idiomas", "learning languages", "💬"),
+  card("study-spanish", "campus", "estudiar español", "studying Spanish", ""),
+  card("learn-languages", "campus", "aprender idiomas", "learning languages", ""),
   card("friends", "campus", "hacer amigos", "making friends", "🤝"),
   card("study", "campus", "estudiar", "studying", "📖"),
-  card("clubs", "campus", "participar en clubes", "joining clubs", "🎭"),
 ];
 
 const flagPath = (code: string) => `flags/${code}.svg`;
 
 export const countries: Country[] = [
   { id: "hong-kong", name: "Hong Kong", english: "Hong Kong", flagImage: flagPath("hk") },
+  { id: "spain", name: "España", english: "Spain", flagImage: flagPath("es") },
   { id: "china", name: "China", english: "Mainland China", flagImage: flagPath("cn") },
   { id: "macao", name: "Macao", english: "Macao", flagImage: flagPath("mo") },
   { id: "taiwan", name: "Taiwán", english: "Taiwan", flagImage: flagPath("tw") },
@@ -292,6 +310,9 @@ export const countries: Country[] = [
   { id: "nepal", name: "Nepal", english: "Nepal", flagImage: flagPath("np") },
   { id: "sri-lanka", name: "Sri Lanka", english: "Sri Lanka", flagImage: flagPath("lk") },
   { id: "kazakhstan", name: "Kazajistán", english: "Kazakhstan", flagImage: flagPath("kz") },
+  { id: "england", name: "Inglaterra", english: "England", flagImage: flagPath("gb-eng") },
+  { id: "france", name: "Francia", english: "France", flagImage: flagPath("fr") },
+  { id: "russia", name: "Rusia", english: "Russia", flagImage: flagPath("ru") },
 ];
 
 export const languages: Language[] = [
@@ -333,6 +354,7 @@ export const residences: Residence[] = [
   { id: "wan-chai", name: "Wan Chai", emoji: "🚋" },
   { id: "causeway-bay", name: "Causeway Bay", emoji: "🛍️" },
   { id: "central", name: "Central", emoji: "🏢" },
+  { id: "sheung-wan", name: "Sheung Wan", emoji: "🏮" },
   { id: "pok-fu-lam", name: "Pok Fu Lam", emoji: "🎓" },
   { id: "kennedy-town", name: "Kennedy Town", emoji: "🌅" },
   { id: "aberdeen", name: "Aberdeen", emoji: "🚤" },
@@ -348,6 +370,9 @@ export const contentChanges: ContentChange[] = [
   { id: "exchange", action: "quitada", before: "hacer un intercambio" },
   { id: "library", action: "cambiada", before: "ir a la biblioteca", after: "estudiar" },
   { id: "sparkling-water", action: "cambiada", before: "el agua con gas", after: "el agua caliente" },
+  { id: "watch-football", action: "quitada", before: "ver el fútbol" },
+  { id: "clubs", action: "quitada", before: "participar en clubes" },
+  { id: "latin-music", action: "cambiada", before: "la música latina", after: "la música" },
 ];
 
 export const finalCardAsset = {
@@ -371,8 +396,10 @@ export const photoCredits = [
   { file: "tortilla.webp", author: "MikeGz · Pexels", url: "https://www.pexels.com/photo/photo-of-a-piece-of-spanish-omelette-14941247/" },
   { file: "churros.webp", author: "Pixabay · Pexels", url: "https://www.pexels.com/photo/churos-with-chocolate-dip-372886/" },
   { file: "cinema.webp", author: "Tima Miroshnichenko · Pexels", url: "https://www.pexels.com/photo/empty-movie-theater-seats-7991303/" },
-  { file: "watch-football.webp", author: "khezez · Pexels", url: "https://www.pexels.com/photo/man-watching-soccer-match-intently-indoors-36799150/" },
   { file: "hot-water.webp", author: "Jahra Tasfia Reza · Pexels", url: "https://www.pexels.com/photo/steaming-hot-tea-being-poured-into-cup-indoors-36959434/" },
+  { file: "orange-juice.webp", author: "Umut Dağlı · Pexels", url: "https://www.pexels.com/photo/orange-juice-in-clear-drinking-glass-12896835/" },
+  { file: "hot-chocolate.webp", author: "Polina Tankilevitch · Pexels", url: "https://www.pexels.com/photo/hot-chocolate-with-marshmallows-in-mug-5419231/" },
+  { file: "theme-parks.webp", author: "NNNH · Wikimedia Commons · CC BY-SA 4.0", url: "https://commons.wikimedia.org/wiki/File:Hong_Kong_Disneyland_Castle_in_2024-08.jpg" },
 ];
 
 export const flagCredit = {

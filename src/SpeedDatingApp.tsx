@@ -475,7 +475,18 @@ export default function SpeedDatingApp() {
                   >
                     {categoryMeta.emoji} {categoryMeta.label}
                   </span>
-                  <span className="item-sticker" aria-hidden="true">{currentCard.sticker}</span>
+                  {currentCard.stickerImages?.length ? (
+                    <span
+                      className={`item-sticker item-sticker-flags ${currentCard.stickerImages.length === 1 ? "single-flag" : ""}`}
+                      aria-hidden="true"
+                    >
+                      {currentCard.stickerImages.map((image) => (
+                        <img key={image} src={image} alt="" />
+                      ))}
+                    </span>
+                  ) : currentCard.sticker ? (
+                    <span className="item-sticker" aria-hidden="true">{currentCard.sticker}</span>
+                  ) : null}
                 </div>
                 <div className="prompt-copy">
                   <small>PREGUNTA · QUESTION</small>
@@ -520,8 +531,10 @@ export default function SpeedDatingApp() {
                 {Array.from({ length: 20 }, (_, index) => <i key={index} />)}
               </div>
             )}
-            <div className="finale-photo finale-brand">
-              <img src={finalCardAsset.image} alt={finalCardAsset.alt} />
+            <div className="finale-visual">
+              <div className="finale-photo finale-brand">
+                <img src={finalCardAsset.image} alt={finalCardAsset.alt} />
+              </div>
               <span className="final-sticker">¡SORPRESA!</span>
             </div>
             <div className="finale-copy">

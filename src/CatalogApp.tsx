@@ -245,7 +245,7 @@ export default function CatalogApp() {
             <table className="catalog-table card-table">
               <thead>
                 <tr>
-                  <th>#</th><th>Imagen</th><th>Emoji</th><th>Contenido</th><th>Gramática</th><th>Fuente</th><th>Revisión</th>
+                  <th>#</th><th>Imagen</th><th>Visual</th><th>Contenido</th><th>Gramática</th><th>Fuente</th><th>Revisión</th>
                 </tr>
               </thead>
               <tbody>
@@ -256,7 +256,17 @@ export default function CatalogApp() {
                     <tr key={card.id} data-status={statusOf(reviews[key])}>
                       <td data-label="#"><strong>{conversationCards.indexOf(card) + 1}</strong></td>
                       <td data-label="Imagen"><img className="catalog-photo" src={card.image} alt={card.alt} /></td>
-                      <td data-label="Emoji"><span className="catalog-emoji" aria-label={`Emoji: ${card.sticker}`}>{card.sticker}</span></td>
+                      <td data-label="Visual">
+                        {card.stickerImages?.length ? (
+                          <span className={`catalog-flag-sticker ${card.stickerImages.length === 1 ? "single-flag" : ""}`} aria-label="Banderas representativas">
+                            {card.stickerImages.map((image) => <img key={image} src={image} alt="" />)}
+                          </span>
+                        ) : card.sticker ? (
+                          <span className="catalog-emoji" aria-label={`Emoji: ${card.sticker}`}>{card.sticker}</span>
+                        ) : (
+                          <span className="catalog-no-sticker">Sin emoji</span>
+                        )}
+                      </td>
                       <td data-label="Contenido">
                         <span className="category-chip" style={{ background: category.color }}>{category.emoji} {category.label}</span>
                         <strong className="catalog-primary">{card.label}</strong>

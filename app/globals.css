@@ -1073,6 +1073,39 @@ mark {
   animation: sticker-wiggle 2.8s ease-in-out infinite;
 }
 
+.item-sticker-flags {
+  display: flex;
+  width: clamp(180px, 19vw, 220px);
+  height: clamp(112px, 11vw, 136px);
+  padding: 12px;
+  align-items: center;
+  justify-content: center;
+  border-color: var(--ink);
+  border-radius: 26px;
+  background: rgba(255, 250, 242, 0.96);
+}
+
+.item-sticker-flags img {
+  width: clamp(58px, 6vw, 76px);
+  height: clamp(44px, 4.5vw, 57px);
+  object-fit: cover;
+  border: 2px solid var(--ink);
+  border-radius: 8px;
+  box-shadow: 4px 5px 0 rgba(37, 22, 31, 0.18);
+}
+
+.item-sticker-flags img + img { margin-left: -18px; }
+
+.item-sticker-flags.single-flag {
+  width: clamp(142px, 14vw, 170px);
+  height: clamp(112px, 11vw, 132px);
+}
+
+.item-sticker-flags.single-flag img {
+  width: 100%;
+  height: 100%;
+}
+
 @keyframes sticker-wiggle {
   0%, 100% { transform: rotate(8deg); }
   50% { transform: rotate(-4deg) scale(1.04); }
@@ -1239,11 +1272,17 @@ mark {
   overflow: hidden;
 }
 
+.finale-visual {
+  position: relative;
+  min-width: 0;
+  margin-left: 10px;
+}
+
 .finale-photo {
   position: relative;
   height: min(66vh, 650px);
   min-height: 430px;
-  margin-left: 10px;
+  margin-left: 0;
   overflow: hidden;
   border: 4px solid var(--ink);
   border-radius: 48% 52% 42% 58% / 49% 41% 59% 51%;
@@ -1280,8 +1319,9 @@ mark {
 
 .final-sticker {
   position: absolute;
-  right: 5%;
-  bottom: 8%;
+  z-index: 3;
+  right: 1.5%;
+  bottom: 4%;
   padding: 12px 17px;
   border: 3px solid var(--ink);
   background: var(--yellow);
@@ -1652,6 +1692,7 @@ mark {
   .prompt-card { min-height: 390px; }
   .answer-panel { min-height: 390px; }
   .finale-screen { grid-template-columns: 1fr; }
+  .finale-visual { margin: 0; }
   .finale-photo { height: 360px; min-height: 360px; margin: 0; }
   .finale-copy { text-align: center; }
   .final-answer,
@@ -1689,6 +1730,9 @@ mark {
   .prompt-card { grid-template-columns: 1fr; }
   .photo-wrap { min-height: 250px; }
   .item-sticker { width: 120px; height: 120px; font-size: 68px; }
+  .item-sticker-flags { width: 168px; height: 104px; padding: 9px; }
+  .item-sticker-flags img { width: 58px; height: 44px; }
+  .item-sticker-flags.single-flag { width: 134px; height: 104px; }
   .prompt-copy { padding: 25px; }
   .prompt-copy h3 { font-size: 36px; }
   .bottom-nav { grid-template-columns: 1fr 1fr; min-height: 76px; padding: 8px 12px 11px; }

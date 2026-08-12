@@ -293,6 +293,42 @@ body:has(.catalog-shell) {
   filter: drop-shadow(5px 6px 0 rgba(37,22,31,0.2));
 }
 
+.catalog-flag-sticker {
+  display: flex;
+  width: 118px;
+  min-height: 86px;
+  padding: 8px;
+  align-items: center;
+  justify-content: center;
+  border: 3px solid var(--ink);
+  border-radius: 18px;
+  background: var(--paper);
+  box-shadow: 5px 6px 0 rgba(37,22,31,0.18);
+}
+
+.catalog-flag-sticker img {
+  width: 46px;
+  height: 35px;
+  object-fit: cover;
+  border: 2px solid var(--ink);
+  border-radius: 6px;
+}
+
+.catalog-flag-sticker img + img { margin-left: -12px; }
+.catalog-flag-sticker.single-flag img { width: 92px; height: 69px; }
+
+.catalog-no-sticker {
+  display: inline-flex;
+  min-height: 42px;
+  padding: 0 11px;
+  align-items: center;
+  border: 2px dashed var(--catalog-border);
+  border-radius: 12px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 800;
+}
+
 .category-chip {
   display: inline-flex;
   margin-bottom: 9px;
@@ -508,6 +544,9 @@ body:has(.catalog-shell) {
   .catalog-table td { padding-left: 102px; }
   .catalog-table td::before { width: 82px; }
   .catalog-emoji { width: 96px; height: 96px; font-size: 52px; }
+  .catalog-flag-sticker { width: min(210px, 100%); min-height: 100px; }
+  .catalog-flag-sticker img { width: 62px; height: 47px; }
+  .catalog-flag-sticker.single-flag img { width: 118px; height: 88px; }
   .decision-buttons { grid-template-columns: 1fr; }
   .decision-buttons button { justify-content: flex-start; padding-left: 14px; }
   .note-field { grid-template-columns: 1fr; }
