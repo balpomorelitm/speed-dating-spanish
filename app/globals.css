@@ -1940,6 +1940,12 @@ mark {
   color: white;
 }
 
+.profile-actions .deactivate-profile-button {
+  border-color: var(--coral);
+  background: #fff0ed;
+  color: var(--burgundy);
+}
+
 .profile-actions .delete-profile-button {
   color: #a13232;
 }

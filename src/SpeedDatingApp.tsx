@@ -241,6 +241,13 @@ export default function SpeedDatingApp() {
     setProfileFormOpen(false);
   };
 
+  const deactivateProfile = () => {
+    setActiveProfileId(null);
+    setSelectedLanguages([]);
+    setSelectedResidence(null);
+    persistProfiles(profiles, null);
+  };
+
   const openProfileForm = (profile?: TeacherProfile) => {
     setEditingProfileId(profile?.id ?? null);
     setProfileName(profile?.name ?? "");
@@ -918,9 +925,15 @@ export default function SpeedDatingApp() {
                               </div>
                             </div>
                             <div className="profile-actions">
-                              <button className="use-profile-button" type="button" onClick={() => applyProfile(profile)}>
-                                {profile.id === activeProfileId ? "En uso ✓" : "Usar perfil"}
-                              </button>
+                              {profile.id === activeProfileId ? (
+                                <button className="deactivate-profile-button" type="button" onClick={deactivateProfile}>
+                                  Desactivar
+                                </button>
+                              ) : (
+                                <button className="use-profile-button" type="button" onClick={() => applyProfile(profile)}>
+                                  Usar perfil
+                                </button>
+                              )}
                               <button type="button" onClick={() => openProfileForm(profile)}>Editar</button>
                               <button className="delete-profile-button" type="button" onClick={() => deleteProfile(profile)}>Quitar</button>
                             </div>
