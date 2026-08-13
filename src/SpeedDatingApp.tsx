@@ -657,9 +657,22 @@ export default function SpeedDatingApp() {
             <span aria-hidden="true">←</span> Anterior
           </button>
           <span className="swipe-tip">Desliza para avanzar <span aria-hidden="true">↔</span></span>
-          <button className="primary-button" onClick={next}>
-            Siguiente <span aria-hidden="true">→</span>
-          </button>
+          <div className="next-nav-actions">
+            {step === 3 && (
+              <button
+                className="language-reset-button"
+                type="button"
+                onClick={() => setSelectedLanguages([])}
+                aria-label="Limpiar las lenguas seleccionadas"
+                title="Limpiar las lenguas seleccionadas"
+              >
+                <span aria-hidden="true">↻</span>
+              </button>
+            )}
+            <button className="primary-button" onClick={next}>
+              Siguiente <span aria-hidden="true">→</span>
+            </button>
+          </div>
         </footer>
       )}
 
