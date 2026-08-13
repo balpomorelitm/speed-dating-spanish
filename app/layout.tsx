@@ -10,13 +10,13 @@ export const metadata: Metadata = {
     description: "Una actividad táctil para practicar español en HKU.",
     type: "website",
     url: "https://balpomorelitm.github.io/speed-dating-spanish/",
-    images: [{ url: "/speed-dating-spanish/og-v2.png", width: 1664, height: 935 }],
+    images: [{ url: "/speed-dating-spanish/og-v3.png", width: 1672, height: 941 }],
   },
   twitter: {
     card: "summary_large_image",
     title: "Speed Dating en español",
     description: "Habla, elige y diviértete.",
-    images: ["/speed-dating-spanish/og-v2.png"],
+    images: ["/speed-dating-spanish/og-v3.png"],
   },
 };
 
