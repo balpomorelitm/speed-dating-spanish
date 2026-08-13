@@ -74,7 +74,7 @@ const loadTeacherProfileState = (): {
         id: candidate.id,
         name: candidate.name,
         languageIds: Array.isArray(candidate.languageIds)
-          ? candidate.languageIds.filter((id): id is string => typeof id === "string" && validLanguageIds.has(id)).slice(0, 3)
+          ? candidate.languageIds.filter((id): id is string => typeof id === "string" && validLanguageIds.has(id)).slice(0, 4)
           : [],
         residenceId: typeof candidate.residenceId === "string" && validResidenceIds.has(candidate.residenceId)
           ? candidate.residenceId
@@ -253,7 +253,7 @@ export default function SpeedDatingApp() {
   const toggleProfileLanguage = (id: string) => {
     setProfileLanguages((current) => {
       if (current.includes(id)) return current.filter((item) => item !== id);
-      if (current.length < 3) return [...current, id];
+      if (current.length < 4) return [...current, id];
       return [...current.slice(1), id];
     });
   };
@@ -867,7 +867,7 @@ export default function SpeedDatingApp() {
                       />
                     </label>
                     <fieldset>
-                      <legend>Lenguas (hasta 3) · Languages</legend>
+                      <legend>Lenguas (hasta 4) · Languages (up to 4)</legend>
                       <div className="profile-language-grid">
                         {languages.map((language) => (
                           <button
