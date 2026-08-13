@@ -74,6 +74,8 @@ const joinSpanish = (items: string[]) => {
 export default function SpeedDatingApp() {
   const [step, setStep] = useState(0);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [fullscreenSupported, setFullscreenSupported] = useState(true);
   const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
   const [selectedLanguages, setSelectedLanguages] = useState<string[]>([]);
   const [selectedResidence, setSelectedResidence] = useState<string | null>(null);
@@ -163,6 +165,29 @@ export default function SpeedDatingApp() {
     });
   };
 
+  const toggleFullscreen = async () => {
+    const fullscreenDocument = document as Document & {
+      webkitFullscreenElement?: Element;
+      webkitExitFullscreen?: () => Promise<void> | void;
+    };
+    const root = document.documentElement as HTMLElement & {
+      webkitRequestFullscreen?: () => Promise<void> | void;
+    };
+
+    try {
+      if (document.fullscreenElement || fullscreenDocument.webkitFullscreenElement) {
+        if (document.exitFullscreen) await document.exitFullscreen();
+        else await fullscreenDocument.webkitExitFullscreen?.();
+      } else if (root.requestFullscreen) {
+        await root.requestFullscreen();
+      } else {
+        await root.webkitRequestFullscreen?.();
+      }
+    } catch {
+      setFullscreenSupported(false);
+    }
+  };
+
   const reset = () => {
     setSelectedCountry(null);
     setSelectedLanguages([]);
@@ -184,6 +209,22 @@ export default function SpeedDatingApp() {
     window.addEventListener("keydown", handleKey);
     return () => window.removeEventListener("keydown", handleKey);
   }, [menuOpen, next, previous]);
+
+  useEffect(() => {
+    const fullscreenDocument = document as Document & {
+      webkitFullscreenElement?: Element;
+    };
+    const syncFullscreen = () => {
+      setIsFullscreen(Boolean(document.fullscreenElement || fullscreenDocument.webkitFullscreenElement));
+    };
+
+    document.addEventListener("fullscreenchange", syncFullscreen);
+    document.addEventListener("webkitfullscreenchange", syncFullscreen);
+    return () => {
+      document.removeEventListener("fullscreenchange", syncFullscreen);
+      document.removeEventListener("webkitfullscreenchange", syncFullscreen);
+    };
+  }, []);
 
   const handleTouchStart = (event: TouchEvent<HTMLDivElement>) => {
     const target = event.target as Element;
@@ -247,11 +288,23 @@ export default function SpeedDatingApp() {
           ))}
         </nav>
 
-        <button className="menu-button" onClick={() => setMenuOpen(true)} aria-label="Abrir menú">
-          <span />
-          <span />
-          <span />
-        </button>
+        <div className="topbar-actions">
+          {fullscreenSupported && (
+            <button
+              className="fullscreen-button"
+              onClick={toggleFullscreen}
+              aria-label={isFullscreen ? "Salir de pantalla completa" : "Abrir en pantalla completa"}
+              title={isFullscreen ? "Salir de pantalla completa" : "Pantalla completa"}
+            >
+              <span aria-hidden="true">{isFullscreen ? "×" : "⛶"}</span>
+            </button>
+          )}
+          <button className="menu-button" onClick={() => setMenuOpen(true)} aria-label="Abrir menú">
+            <span />
+            <span />
+            <span />
+          </button>
+        </div>
       </header>
 
       <main className="stage" aria-live="polite">

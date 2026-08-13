@@ -377,7 +377,7 @@ export const contentChanges: ContentChange[] = [
 
 export const finalCardAsset = {
   id: "chupa-chups",
-  image: "brand/chupa-chups.svg",
+  image: "brand/chupa-chups.png",
   alt: "Logotipo de Chupa Chups",
   photoCredit: "Chupa Chups · Wikimedia Commons",
   photoSource: "https://commons.wikimedia.org/wiki/File:Chupa_Chups_logo.svg",

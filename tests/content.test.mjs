@@ -27,6 +27,8 @@ test("the complete guided sequence and finale are present", () => {
   assert.match(app, /catalogo\.html/);
   assert.match(app, /className="finale-visual"/);
   assert.match(app, /instagram-panel/);
+  assert.match(app, /toggleFullscreen/);
+  assert.match(app, /requestFullscreen/);
   assert.match(catalogApp, /preview-qr instagram/);
 });
 
@@ -80,7 +82,7 @@ test("flags, specific photos and review controls are wired locally", async () =>
     "../public/photos/cards/orange-juice.webp",
     "../public/photos/cards/hot-chocolate.webp",
     "../public/photos/cards/theme-parks.webp",
-    "../public/brand/chupa-chups.svg",
+    "../public/brand/chupa-chups.png",
   ]) {
     await access(new URL(relativePath, import.meta.url));
   }
