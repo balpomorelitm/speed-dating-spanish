@@ -46,6 +46,50 @@ const reactions = [
 type CategoryFilter = "all" | CategoryId;
 type ReactionId = (typeof reactions)[number]["id"];
 type DeckState = { currentId: string; queue: string[]; round: number };
+type TeacherProfile = {
+  id: string;
+  name: string;
+  languageIds: string[];
+  residenceId: string | null;
+};
+
+const PROFILE_STORAGE_KEY = "speed-dating-teacher-profiles-v1";
+const ACTIVE_PROFILE_STORAGE_KEY = "speed-dating-active-teacher-profile-v1";
+
+const loadTeacherProfileState = (): {
+  profiles: TeacherProfile[];
+  activeProfile: TeacherProfile | null;
+} => {
+  if (typeof window === "undefined") return { profiles: [], activeProfile: null };
+  try {
+    const storedProfiles = JSON.parse(window.localStorage.getItem(PROFILE_STORAGE_KEY) ?? "[]") as unknown;
+    if (!Array.isArray(storedProfiles)) return { profiles: [], activeProfile: null };
+    const validLanguageIds = new Set(languages.map((language) => language.id));
+    const validResidenceIds = new Set(residences.map((place) => place.id));
+    const profiles = storedProfiles.flatMap((item): TeacherProfile[] => {
+      if (!item || typeof item !== "object") return [];
+      const candidate = item as Partial<TeacherProfile>;
+      if (typeof candidate.id !== "string" || typeof candidate.name !== "string") return [];
+      return [{
+        id: candidate.id,
+        name: candidate.name,
+        languageIds: Array.isArray(candidate.languageIds)
+          ? candidate.languageIds.filter((id): id is string => typeof id === "string" && validLanguageIds.has(id)).slice(0, 3)
+          : [],
+        residenceId: typeof candidate.residenceId === "string" && validResidenceIds.has(candidate.residenceId)
+          ? candidate.residenceId
+          : null,
+      }];
+    });
+    const activeId = window.localStorage.getItem(ACTIVE_PROFILE_STORAGE_KEY);
+    return {
+      profiles,
+      activeProfile: profiles.find((profile) => profile.id === activeId) ?? null,
+    };
+  } catch {
+    return { profiles: [], activeProfile: null };
+  }
+};
 
 const shuffle = <T,>(items: T[]) => {
   const copy = [...items];
@@ -85,6 +129,15 @@ export default function SpeedDatingApp() {
   const [cardMotion, setCardMotion] = useState(0);
   const [deckNotice, setDeckNotice] = useState("");
   const [finaleAnswered, setFinaleAnswered] = useState(false);
+  const [profiles, setProfiles] = useState<TeacherProfile[]>([]);
+  const [activeProfileId, setActiveProfileId] = useState<string | null>(null);
+  const [profilePanelOpen, setProfilePanelOpen] = useState(false);
+  const [profileFormOpen, setProfileFormOpen] = useState(false);
+  const [editingProfileId, setEditingProfileId] = useState<string | null>(null);
+  const [profileName, setProfileName] = useState("");
+  const [profileLanguages, setProfileLanguages] = useState<string[]>([]);
+  const [profileResidence, setProfileResidence] = useState("");
+  const [profileError, setProfileError] = useState("");
   const touchStart = useRef<{ x: number; y: number; blocked: boolean } | null>(null);
 
   const currentCard =
@@ -92,6 +145,7 @@ export default function SpeedDatingApp() {
 
   const country = countries.find((item) => item.id === selectedCountry);
   const residence = residences.find((item) => item.id === selectedResidence);
+  const activeProfile = profiles.find((profile) => profile.id === activeProfileId) ?? null;
   const languageNames = selectedLanguages
     .map((id) => languages.find((language) => language.id === id)?.name)
     .filter((name): name is string => Boolean(name));
@@ -109,6 +163,8 @@ export default function SpeedDatingApp() {
     if (boundedTarget !== 7) setFinaleAnswered(false);
     setStep(boundedTarget);
     setMenuOpen(false);
+    setProfilePanelOpen(false);
+    setProfileFormOpen(false);
     setDeckNotice("");
     if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
   }, []);
@@ -165,6 +221,94 @@ export default function SpeedDatingApp() {
     });
   };
 
+  const persistProfiles = (nextProfiles: TeacherProfile[], nextActiveId: string | null) => {
+    try {
+      window.localStorage.setItem(PROFILE_STORAGE_KEY, JSON.stringify(nextProfiles));
+      if (nextActiveId) window.localStorage.setItem(ACTIVE_PROFILE_STORAGE_KEY, nextActiveId);
+      else window.localStorage.removeItem(ACTIVE_PROFILE_STORAGE_KEY);
+    } catch {
+      // The app still works for the current session if private browsing blocks storage.
+    }
+  };
+
+  const applyProfile = (profile: TeacherProfile) => {
+    setActiveProfileId(profile.id);
+    setSelectedLanguages(profile.languageIds);
+    setSelectedResidence(profile.residenceId);
+    persistProfiles(profiles, profile.id);
+    setMenuOpen(false);
+    setProfilePanelOpen(false);
+    setProfileFormOpen(false);
+  };
+
+  const openProfileForm = (profile?: TeacherProfile) => {
+    setEditingProfileId(profile?.id ?? null);
+    setProfileName(profile?.name ?? "");
+    setProfileLanguages(profile?.languageIds ?? []);
+    setProfileResidence(profile?.residenceId ?? "");
+    setProfileError("");
+    setProfileFormOpen(true);
+  };
+
+  const toggleProfileLanguage = (id: string) => {
+    setProfileLanguages((current) => {
+      if (current.includes(id)) return current.filter((item) => item !== id);
+      if (current.length < 3) return [...current, id];
+      return [...current.slice(1), id];
+    });
+  };
+
+  const saveProfile = () => {
+    const cleanName = profileName.trim();
+    if (!cleanName) {
+      setProfileError("Escribe el nombre del profesor.");
+      return;
+    }
+    if (profileLanguages.length === 0) {
+      setProfileError("Elige al menos una lengua.");
+      return;
+    }
+    if (!profileResidence) {
+      setProfileError("Elige dónde vive el profesor.");
+      return;
+    }
+
+    const id = editingProfileId ??
+      (typeof crypto !== "undefined" && "randomUUID" in crypto
+        ? crypto.randomUUID()
+        : `profile-${Date.now()}`);
+    const savedProfile: TeacherProfile = {
+      id,
+      name: cleanName,
+      languageIds: profileLanguages,
+      residenceId: profileResidence || null,
+    };
+    const nextProfiles = editingProfileId
+      ? profiles.map((profile) => profile.id === editingProfileId ? savedProfile : profile)
+      : [...profiles, savedProfile];
+
+    setProfiles(nextProfiles);
+    setActiveProfileId(id);
+    setSelectedLanguages(savedProfile.languageIds);
+    setSelectedResidence(savedProfile.residenceId);
+    persistProfiles(nextProfiles, id);
+    setProfileFormOpen(false);
+    setEditingProfileId(null);
+  };
+
+  const deleteProfile = (profile: TeacherProfile) => {
+    if (!window.confirm(`¿Quitar el perfil de ${profile.name}?`)) return;
+    const nextProfiles = profiles.filter((item) => item.id !== profile.id);
+    const nextActiveId = activeProfileId === profile.id ? null : activeProfileId;
+    setProfiles(nextProfiles);
+    setActiveProfileId(nextActiveId);
+    if (activeProfileId === profile.id) {
+      setSelectedLanguages([]);
+      setSelectedResidence(null);
+    }
+    persistProfiles(nextProfiles, nextActiveId);
+  };
+
   const toggleFullscreen = async () => {
     const fullscreenDocument = document as Document & {
       webkitFullscreenElement?: Element;
@@ -190,14 +334,27 @@ export default function SpeedDatingApp() {
 
   const reset = () => {
     setSelectedCountry(null);
-    setSelectedLanguages([]);
-    setSelectedResidence(null);
+    setSelectedLanguages(activeProfile?.languageIds ?? []);
+    setSelectedResidence(activeProfile?.residenceId ?? null);
     setCategory("all");
     setDeck(makeDeck(conversationCards));
     setReaction(null);
     setFinaleAnswered(false);
     goToStep(0);
   };
+
+  useEffect(() => {
+    const timeoutId = window.setTimeout(() => {
+      const storedState = loadTeacherProfileState();
+      setProfiles(storedState.profiles);
+      if (storedState.activeProfile) {
+        setActiveProfileId(storedState.activeProfile.id);
+        setSelectedLanguages(storedState.activeProfile.languageIds);
+        setSelectedResidence(storedState.activeProfile.residenceId);
+      }
+    }, 0);
+    return () => window.clearTimeout(timeoutId);
+  }, []);
 
   useEffect(() => {
     const handleKey = (event: KeyboardEvent) => {
@@ -342,7 +499,7 @@ export default function SpeedDatingApp() {
               <div className="teacher-card">
                 <div className="teacher-avatar waving-hand" aria-hidden="true">👋</div>
                 <span className="role-label">PROFESOR · TEACHER</span>
-                <p>Me llamo…</p>
+                <p>Me llamo <b>{activeProfile?.name ?? "…"}</b>.</p>
                 <strong>¿Cómo te llamas?</strong>
               </div>
               <div className="student-answer coral-card">
@@ -393,7 +550,11 @@ export default function SpeedDatingApp() {
             </LessonHeading>
             <div className="teacher-example">
               <span>PROFESOR · TEACHER</span>
-              <p>«Hablo español, inglés y un poco de chino.»</p>
+              <p>
+                {activeProfile
+                  ? `«Hablo ${joinSpanish(activeProfile.languageIds.map((id) => languages.find((language) => language.id === id)?.name).filter((name): name is string => Boolean(name)))}.»`
+                  : "«Hablo español, inglés y un poco de chino.»"}
+              </p>
             </div>
             <div className="live-sentence language-sentence">
               <span className="sentence-flag sentence-language-flags" aria-hidden="true">
@@ -587,7 +748,7 @@ export default function SpeedDatingApp() {
             )}
             <div className="finale-visual">
               <div className="finale-photo finale-brand">
-                <img src={finalCardAsset.image} alt={finalCardAsset.alt} />
+                <img src={finalCardAsset.image} alt={finalCardAsset.alt} width="640" height="640" />
               </div>
               <span className="final-sticker">¡SORPRESA!</span>
             </div>
@@ -658,13 +819,13 @@ export default function SpeedDatingApp() {
           </button>
           <span className="swipe-tip">Desliza para avanzar <span aria-hidden="true">↔</span></span>
           <div className="next-nav-actions">
-            {step === 3 && (
+            {(step === 3 || step === 4) && (
               <button
                 className="language-reset-button"
                 type="button"
-                onClick={() => setSelectedLanguages([])}
-                aria-label="Limpiar las lenguas seleccionadas"
-                title="Limpiar las lenguas seleccionadas"
+                onClick={() => step === 3 ? setSelectedLanguages([]) : setSelectedResidence(null)}
+                aria-label={step === 3 ? "Limpiar las lenguas seleccionadas" : "Limpiar el lugar seleccionado"}
+                title={step === 3 ? "Limpiar las lenguas seleccionadas" : "Limpiar el lugar seleccionado"}
               >
                 <span aria-hidden="true">↻</span>
               </button>
@@ -678,41 +839,133 @@ export default function SpeedDatingApp() {
 
       {menuOpen && (
         <div className="menu-overlay" role="dialog" aria-modal="true" aria-labelledby="menu-title">
-          <div className="menu-panel">
+          <div className={`menu-panel ${profilePanelOpen ? "profiles-panel" : ""}`}>
             <div className="menu-heading">
               <div>
-                <span>IR A · JUMP TO</span>
-                <h2 id="menu-title">Elige una sección</h2>
+                <span>{profilePanelOpen ? "CONFIGURACIÓN LOCAL · ON THIS DEVICE" : "IR A · JUMP TO"}</span>
+                <h2 id="menu-title">{profilePanelOpen ? "Perfiles de profesor" : "Elige una sección"}</h2>
               </div>
-              <button onClick={() => setMenuOpen(false)} aria-label="Cerrar menú">×</button>
+              <button
+                onClick={() => profilePanelOpen ? (setProfilePanelOpen(false), setProfileFormOpen(false)) : setMenuOpen(false)}
+                aria-label={profilePanelOpen ? "Volver al menú" : "Cerrar menú"}
+              >{profilePanelOpen ? "←" : "×"}</button>
             </div>
-            <div className="menu-grid">
-              {stepLabels.map((label, index) => (
-                <button key={label} onClick={() => goToStep(index)} className={index === step ? "active" : ""}>
-                  <span>0{index + 1}</span>
-                  <strong>{label}</strong>
-                </button>
-              ))}
-              <button className="final-menu-item" onClick={() => goToStep(7)}>
-                <span>🍭</span>
-                <strong>Final</strong>
-              </button>
-            </div>
-            <details className="credits">
-              <summary>Créditos de fotografías</summary>
-              <p>
-                Fotografías de {photoCredits.map((credit, index) => (
-                  <span key={credit.file}>
-                    <a href={credit.url} target="_blank" rel="noreferrer">{credit.author}</a>
-                    {index < photoCredits.length - 1 ? ", " : "."}
-                  </span>
-                ))}
-              </p>
-            </details>
-            <a className="catalog-link" href="catalogo.html">
-              Catálogo del profesor <span aria-hidden="true">↗</span>
-            </a>
-            <button className="reset-link" onClick={reset}>↻ Reiniciar toda la actividad</button>
+            {profilePanelOpen ? (
+              <div className="profile-manager" data-no-swipe>
+                <p className="profile-help">Guarda nombre, lenguas y residencia en esta tablet. Puedes cambiar de profesor con un toque.</p>
+                {profileFormOpen ? (
+                  <div className="profile-form">
+                    <label className="profile-name-field">
+                      <span>Nombre · Name</span>
+                      <input
+                        value={profileName}
+                        onChange={(event) => setProfileName(event.target.value)}
+                        placeholder="Ej. Ana"
+                        autoComplete="off"
+                        maxLength={40}
+                        autoFocus
+                      />
+                    </label>
+                    <fieldset>
+                      <legend>Lenguas (hasta 3) · Languages</legend>
+                      <div className="profile-language-grid">
+                        {languages.map((language) => (
+                          <button
+                            type="button"
+                            key={language.id}
+                            className={profileLanguages.includes(language.id) ? "selected" : ""}
+                            onClick={() => toggleProfileLanguage(language.id)}
+                            aria-pressed={profileLanguages.includes(language.id)}
+                          >
+                            <img src={language.flagImage} alt="" />
+                            <span>{language.name}</span>
+                          </button>
+                        ))}
+                      </div>
+                    </fieldset>
+                    <label className="profile-name-field">
+                      <span>Vive en · Lives in</span>
+                      <select value={profileResidence} onChange={(event) => setProfileResidence(event.target.value)}>
+                        <option value="">Sin seleccionar</option>
+                        {residences.map((place) => <option key={place.id} value={place.id}>{place.name}</option>)}
+                      </select>
+                    </label>
+                    {profileError && <p className="profile-error" role="alert">{profileError}</p>}
+                    <div className="profile-form-actions">
+                      <button className="secondary-button" type="button" onClick={() => setProfileFormOpen(false)}>Cancelar</button>
+                      <button className="primary-button" type="button" onClick={saveProfile}>Guardar y usar</button>
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    <button className="add-profile-button" type="button" onClick={() => openProfileForm()}>
+                      <span aria-hidden="true">＋</span> Crear un perfil
+                    </button>
+                    <div className="profile-list">
+                      {profiles.length === 0 && <p className="empty-profiles">Todavía no hay perfiles guardados.</p>}
+                      {profiles.map((profile) => {
+                        const profileResidenceName = residences.find((place) => place.id === profile.residenceId)?.name;
+                        const profileLanguageNames = profile.languageIds
+                          .map((id) => languages.find((language) => language.id === id)?.name)
+                          .filter((name): name is string => Boolean(name));
+                        return (
+                          <article className={profile.id === activeProfileId ? "active" : ""} key={profile.id}>
+                            <div className="profile-summary">
+                              <span className="profile-avatar" aria-hidden="true">👋</span>
+                              <div>
+                                <strong>{profile.name}</strong>
+                                <small>Hablo {joinSpanish(profileLanguageNames)} · Vivo en {profileResidenceName ?? "…"}</small>
+                              </div>
+                            </div>
+                            <div className="profile-actions">
+                              <button className="use-profile-button" type="button" onClick={() => applyProfile(profile)}>
+                                {profile.id === activeProfileId ? "En uso ✓" : "Usar perfil"}
+                              </button>
+                              <button type="button" onClick={() => openProfileForm(profile)}>Editar</button>
+                              <button className="delete-profile-button" type="button" onClick={() => deleteProfile(profile)}>Quitar</button>
+                            </div>
+                          </article>
+                        );
+                      })}
+                    </div>
+                  </>
+                )}
+              </div>
+            ) : (
+              <>
+                <div className="menu-grid">
+                  {stepLabels.map((label, index) => (
+                    <button key={label} onClick={() => goToStep(index)} className={index === step ? "active" : ""}>
+                      <span>0{index + 1}</span>
+                      <strong>{label}</strong>
+                    </button>
+                  ))}
+                  <button className="profile-menu-item" onClick={() => setProfilePanelOpen(true)}>
+                    <span>👤</span>
+                    <strong>{activeProfile ? `Perfil: ${activeProfile.name}` : "Crear perfil"}</strong>
+                  </button>
+                  <button className="final-menu-item" onClick={() => goToStep(7)}>
+                    <span>🍭</span>
+                    <strong>Final</strong>
+                  </button>
+                </div>
+                <details className="credits">
+                  <summary>Créditos de fotografías</summary>
+                  <p>
+                    Fotografías de {photoCredits.map((credit, index) => (
+                      <span key={credit.file}>
+                        <a href={credit.url} target="_blank" rel="noreferrer">{credit.author}</a>
+                        {index < photoCredits.length - 1 ? ", " : "."}
+                      </span>
+                    ))}
+                  </p>
+                </details>
+                <a className="catalog-link" href="catalogo.html">
+                  Catálogo del profesor <span aria-hidden="true">↗</span>
+                </a>
+                <button className="reset-link" onClick={reset}>↻ Reiniciar toda la actividad</button>
+              </>
+            )}
           </div>
         </div>
       )}

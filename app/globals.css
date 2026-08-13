@@ -609,6 +609,10 @@ mark {
   font-size: clamp(27px, 3vw, 44px);
 }
 
+.teacher-card p b {
+  color: var(--burgundy);
+}
+
 .teacher-card strong {
   color: var(--burgundy);
   font-family: var(--font-display);
@@ -1312,18 +1316,20 @@ mark {
   height: min(66vh, 650px);
   min-height: 430px;
   margin-left: 0;
-  overflow: hidden;
+  overflow: visible;
   border: 4px solid var(--ink);
   border-radius: 48% 52% 42% 58% / 49% 41% 59% 51%;
   background: var(--coral);
   box-shadow: 16px 17px 0 var(--yellow);
-  transform: rotate(-2deg);
+  isolation: isolate;
 }
 
 .finale-photo img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+  display: block;
+  width: min(74%, 470px);
+  height: auto;
+  max-height: 74%;
+  object-fit: contain;
 }
 
 .finale-brand {
@@ -1337,13 +1343,6 @@ mark {
 
 .finale-brand img {
   object-fit: contain;
-  filter: drop-shadow(10px 12px 0 rgba(37, 22, 31, 0.13));
-  animation: logo-float 3.2s ease-in-out infinite;
-}
-
-@keyframes logo-float {
-  0%, 100% { transform: translateY(0) rotate(-2deg); }
-  50% { transform: translateY(-14px) rotate(2deg); }
 }
 
 .final-sticker {
@@ -1760,6 +1759,15 @@ mark {
   color: white;
 }
 
+.menu-grid .profile-menu-item {
+  border-color: var(--cyan);
+  background: rgba(32, 184, 205, 0.13);
+}
+
+.menu-grid .profile-menu-item span {
+  font-size: 26px;
+}
+
 .menu-grid .final-menu-item span {
   font-size: 26px;
 }
@@ -1809,6 +1817,237 @@ mark {
   font-size: 12px;
   font-weight: 800;
   text-decoration: none;
+}
+
+/* Local teacher profiles */
+.menu-panel.profiles-panel {
+  width: min(980px, 100%);
+}
+
+.profile-manager {
+  min-width: 0;
+}
+
+.profile-help {
+  margin: -8px 0 22px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.add-profile-button {
+  display: flex;
+  width: 100%;
+  min-height: 64px;
+  padding: 10px 20px;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  border: 2px dashed var(--burgundy);
+  border-radius: 18px;
+  background: rgba(255, 250, 242, 0.72);
+  color: var(--burgundy);
+  font-weight: 850;
+  cursor: pointer;
+}
+
+.add-profile-button span {
+  font-size: 26px;
+}
+
+.profile-list {
+  display: grid;
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.profile-list article {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 18px;
+  padding: 16px;
+  border: 2px solid var(--line);
+  border-radius: 20px;
+  background: var(--paper);
+}
+
+.profile-list article.active {
+  border-color: var(--burgundy);
+  box-shadow: 5px 6px 0 rgba(122, 0, 60, 0.18);
+}
+
+.profile-summary {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 14px;
+}
+
+.profile-avatar {
+  display: grid;
+  width: 50px;
+  height: 50px;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 15px;
+  background: var(--yellow);
+  font-size: 25px;
+}
+
+.profile-summary div {
+  min-width: 0;
+}
+
+.profile-summary strong,
+.profile-summary small {
+  display: block;
+}
+
+.profile-summary strong {
+  color: var(--burgundy);
+  font-family: var(--font-display);
+  font-size: 22px;
+}
+
+.profile-summary small {
+  margin-top: 4px;
+  color: var(--muted);
+  line-height: 1.35;
+}
+
+.profile-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 7px;
+}
+
+.profile-actions button {
+  min-height: 46px;
+  padding: 0 13px;
+  border: 1px solid var(--line);
+  border-radius: 13px;
+  background: white;
+  color: var(--burgundy);
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.profile-actions .use-profile-button {
+  border-color: var(--burgundy);
+  background: var(--burgundy);
+  color: white;
+}
+
+.profile-actions .delete-profile-button {
+  color: #a13232;
+}
+
+.empty-profiles {
+  margin: 10px 0 0;
+  padding: 20px;
+  border-radius: 16px;
+  background: rgba(122, 0, 60, 0.06);
+  color: var(--muted);
+  text-align: center;
+}
+
+.profile-form {
+  display: grid;
+  gap: 20px;
+}
+
+.profile-name-field,
+.profile-form fieldset {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.profile-name-field > span,
+.profile-form legend {
+  color: var(--burgundy);
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+}
+
+.profile-name-field input,
+.profile-name-field select {
+  width: 100%;
+  min-height: 58px;
+  padding: 0 16px;
+  border: 2px solid var(--line);
+  border-radius: 16px;
+  background: white;
+  color: var(--ink);
+  font: inherit;
+  font-size: 17px;
+}
+
+.profile-name-field input:focus,
+.profile-name-field select:focus {
+  border-color: var(--cyan);
+  outline: 3px solid rgba(32, 184, 205, 0.18);
+}
+
+.profile-language-grid {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.profile-language-grid button {
+  display: flex;
+  min-width: 0;
+  min-height: 68px;
+  padding: 7px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  border: 2px solid var(--line);
+  border-radius: 14px;
+  background: var(--paper);
+  cursor: pointer;
+}
+
+.profile-language-grid button.selected {
+  border-color: var(--burgundy);
+  background: var(--yellow);
+  box-shadow: 3px 4px 0 var(--burgundy);
+}
+
+.profile-language-grid img {
+  width: 38px;
+  height: 28px;
+  object-fit: cover;
+  border-radius: 5px;
+}
+
+.profile-language-grid span {
+  max-width: 100%;
+  overflow: hidden;
+  font-size: 10px;
+  font-weight: 750;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.profile-error {
+  margin: -8px 0 0;
+  color: #a13232;
+  font-weight: 800;
+}
+
+.profile-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
 }
 
 @media (max-width: 1100px) {
@@ -1892,6 +2131,11 @@ mark {
   .language-reset-button { width: 55px; min-width: 55px; height: 55px; }
   .menu-overlay { padding: 13px; }
   .menu-grid { grid-template-columns: repeat(2, 1fr); }
+  .profile-language-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .profile-list article { grid-template-columns: 1fr; }
+  .profile-actions { justify-content: flex-start; }
+  .profile-form-actions { flex-direction: column-reverse; }
+  .profile-form-actions button { width: 100%; }
   .qr-panel { flex-direction: column; text-align: center; }
   .instagram-title { justify-content: center; }
 }
