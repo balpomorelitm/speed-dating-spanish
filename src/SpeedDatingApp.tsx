@@ -614,9 +614,9 @@ export default function SpeedDatingApp() {
                         />
                       </a>
                       <div>
-                        <span>DESCUBRE MÁS</span>
-                        <strong>Español en HKU</strong>
-                        <small>Scan to visit our programme</small>
+                        <span>DISCOVER MORE</span>
+                        <strong>Spanish at HKU</strong>
+                        <small>Visit the programme website</small>
                       </div>
                     </div>
                     <div className="qr-panel instagram-panel">

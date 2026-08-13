@@ -343,7 +343,7 @@ export default function CatalogApp() {
               <div className="preview-qr-stack">
                 <div className="preview-qr">
                   <QRCodeSVG value={PROGRAMME_URL} size={132} level="H" title="QR de Español en HKU" />
-                  <div><strong>Descubre Español en HKU</strong><small>Visita la web del programa</small></div>
+                  <div><strong>Discover Spanish at HKU</strong><small>Visit the programme website</small></div>
                 </div>
                 <div className="preview-qr instagram">
                   <QRCodeSVG value={INSTAGRAM_URL} size={132} level="H" fgColor="#74105e" title="QR del Instagram de Spanish Programme HKU" />
