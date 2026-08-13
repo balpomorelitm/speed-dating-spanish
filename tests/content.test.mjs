@@ -10,7 +10,7 @@ const catalogApp = await readFile(new URL("../src/CatalogApp.tsx", import.meta.u
 
 test("the static GitHub Pages build has its entry point and metadata", () => {
   assert.match(html, /<div id="root"><\/div>/);
-  assert.match(html, /Speed Dating en español/);
+  assert.match(html, /Speak Dating en español/);
   assert.match(html, /\.\/assets\//);
   assert.match(catalogHtml, /Catálogo del profesor/);
   assert.match(catalogHtml, /\.\/assets\//);

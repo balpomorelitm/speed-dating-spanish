@@ -1,4 +1,4 @@
-# Speed Dating en español
+# Speak Dating en español
 
 Actividad táctil para las jornadas de puertas abiertas del Spanish Programme de HKU. Permite practicar presentaciones, procedencia, lenguas, residencia y gustos mediante tarjetas visuales.
 

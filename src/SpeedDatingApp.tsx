@@ -432,7 +432,7 @@ export default function SpeedDatingApp() {
         <button className="mini-brand" onClick={() => goToStep(0)} aria-label="Volver al inicio">
           <span className="brand-dot">¡H!</span>
           <span>
-            <strong>Speed Dating</strong>
+            <strong>Speak Dating</strong>
             <small>en español</small>
           </span>
         </button>
@@ -477,7 +477,7 @@ export default function SpeedDatingApp() {
             <div className="welcome-copy">
               <div className="eyebrow"><span>HKU</span> · PUERTAS ABIERTAS</div>
               <h1>
-                Speed Dating
+                Speak Dating
                 <em>en español</em>
               </h1>
               <p>Habla, elige y diviértete.</p>

@@ -276,7 +276,7 @@ export const conversationCards: ConversationCard[] = [
   card("mountains", "places", "la montaña", "the mountains", "⛰️"),
   card("cinema", "places", "el cine", "the cinema", "🍿"),
   card("museums", "places", "los museos", "museums", "🏛️", "plural"),
-  card("theme-parks", "places", "los parques temáticos", "theme parks", "🎢", "plural"),
+  card("theme-parks", "places", "Disneyland", "Disneyland", "🏰"),
   card("victoria-peak", "places", "Victoria Peak", "Victoria Peak", "🌃"),
   card("cantopop", "places", "el Cantopop", "Cantopop", "🎶"),
   card("kpop", "places", "el K-pop", "K-pop", "✨"),

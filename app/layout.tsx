@@ -3,20 +3,20 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://balpomorelitm.github.io/speed-dating-spanish/"),
-  title: "Speed Dating en español",
+  title: "Speak Dating en español",
   description: "Habla, elige y diviértete con esta actividad de Español en HKU.",
   openGraph: {
-    title: "Speed Dating en español",
+    title: "Speak Dating en español",
     description: "Una actividad táctil para practicar español en HKU.",
     type: "website",
     url: "https://balpomorelitm.github.io/speed-dating-spanish/",
-    images: [{ url: "/speed-dating-spanish/og-v3.png", width: 1672, height: 941 }],
+    images: [{ url: "/speed-dating-spanish/og-v4.png", width: 1672, height: 941 }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Speed Dating en español",
+    title: "Speak Dating en español",
     description: "Habla, elige y diviértete.",
-    images: ["/speed-dating-spanish/og-v3.png"],
+    images: ["/speed-dating-spanish/og-v4.png"],
   },
 };
 

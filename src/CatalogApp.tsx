@@ -119,7 +119,7 @@ export default function CatalogApp() {
 
   const copySummary = async () => {
     const lines = [
-      "REVISIÓN · SPEED DATING EN ESPAÑOL",
+      "REVISIÓN · SPEAK DATING EN ESPAÑOL",
       `Tarjetas: ${conversationCards.length} · Procedencias: ${countries.length} · Lenguas: ${languages.length}`,
       "",
     ];
