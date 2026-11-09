@@ -121,13 +121,14 @@ test("drinks retain exactly the existing six cards", () => {
 });
 
 test("HKU attribution and programme headings are included in both QR views", async () => {
+  const topbar = app.match(/<header className="topbar">([\s\S]*?)<\/header>/)?.[1] ?? "";
   assert.match(app, /SPANISH LANGUAGE &(?:amp;)? CULTURE/);
-  assert.match(app, /Developed by the HKU SPANISH DEPARTMENT 💟/);
+  assert.match(topbar, /Developed with <span role="img" aria-label="love">💟<\/span> by the <strong>HKU SPANISH DEPARTMENT<\/strong>/);
   assert.match(app, /Learn more about the Spanish Programme at HKU/);
   assert.match(catalogApp, /Learn more about the Spanish Programme at HKU/);
   assert.doesNotMatch(app, /HKU · PUERTAS ABIERTAS/);
-  const logoPath = app.match(/src="(brand\/smlc[^"]+)"/)?.[1];
-  assert.ok(logoPath, "missing local SMLC logo on home screen");
+  const logoPath = topbar.match(/src="(brand\/smlc[^"]+)"/)?.[1];
+  assert.ok(logoPath, "missing local SMLC logo in persistent topbar");
   await access(new URL(`../public/${logoPath}`, import.meta.url));
 });
 

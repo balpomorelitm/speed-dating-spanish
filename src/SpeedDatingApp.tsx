@@ -370,22 +370,28 @@ export default function SpeedDatingApp() {
           </span>
         </button>
 
-        <nav className="progress" aria-label="Progreso de la actividad">
-          {stepLabels.map((label, index) => (
-            <button
-              key={label}
-              className={index === Math.min(step, 6) ? "active" : index < step ? "done" : ""}
-              onClick={() => goToStep(index)}
-              aria-label={`Ir a ${label}`}
-              aria-current={index === Math.min(step, 6) ? "step" : undefined}
-            >
-              <span>{index < step ? "✓" : index + 1}</span>
-              <small>{label}</small>
-            </button>
-          ))}
-        </nav>
+        <div className="topbar-center">
+          <p className="topbar-attribution" lang="en">
+            Developed with <span role="img" aria-label="love">💟</span> by the <strong>HKU SPANISH DEPARTMENT</strong>
+          </p>
+          <nav className="progress" aria-label="Progreso de la actividad">
+            {stepLabels.map((label, index) => (
+              <button
+                key={label}
+                className={index === Math.min(step, 6) ? "active" : index < step ? "done" : ""}
+                onClick={() => goToStep(index)}
+                aria-label={`Ir a ${label}`}
+                aria-current={index === Math.min(step, 6) ? "step" : undefined}
+              >
+                <span>{index < step ? "✓" : index + 1}</span>
+                <small>{label}</small>
+              </button>
+            ))}
+          </nav>
+        </div>
 
         <div className="topbar-actions">
+          <img className="topbar-smlc" src="brand/smlc.png" width="1000" height="137" alt="School of Modern Languages and Cultures, The University of Hong Kong" />
           {fullscreenSupported && (
             <button
               className="fullscreen-button"
@@ -427,10 +433,6 @@ export default function SpeedDatingApp() {
               <div className="sticker sticker-one">¡VAMOS!</div>
               <div className="sticker sticker-two">HOLA</div>
             </div>
-            <footer className="welcome-attribution">
-              <img src="brand/smlc.png" width="1000" height="137" alt="School of Modern Languages and Cultures, The University of Hong Kong" />
-              <p lang="en">Developed by the HKU SPANISH DEPARTMENT 💟</p>
-            </footer>
           </section>
         )}
 
