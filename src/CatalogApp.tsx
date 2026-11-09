@@ -12,6 +12,7 @@ import {
   finalCardAsset,
   flagCredit,
   languages,
+  photoCredits,
   type CategoryId,
 } from "./data/content";
 
@@ -252,6 +253,7 @@ export default function CatalogApp() {
               <tbody>
                 {filteredCards.map((card) => {
                   const category = categories.find((item) => item.id === card.category)!;
+                  const credit = photoCredits.find((item) => item.url === card.photoSource);
                   const key = reviewKey("cards", card.id);
                   return (
                     <tr key={card.id} data-status={statusOf(reviews[key])}>
@@ -280,6 +282,8 @@ export default function CatalogApp() {
                       <td data-label="Fuente">
                         <span className={`image-kind ${card.imageKind}`}>{card.imageKind === "specific" ? "Foto propia" : "Foto de categoría"}</span>
                         <a href={card.photoSource} target="_blank" rel="noreferrer">{card.photoCredit} ↗</a>
+                        {credit?.licenseUrl && <a href={credit.licenseUrl} target="_blank" rel="noreferrer">Licencia ↗</a>}
+                        {credit?.changes && <small>{credit.changes}</small>}
                       </td>
                       <td data-label="Revisión"><ReviewControls itemKey={key} entry={reviews[key]} onDecision={updateDecision} onNote={updateNote} /></td>
                     </tr>
@@ -340,6 +344,7 @@ export default function CatalogApp() {
             <article className="final-preview after">
               <span className="preview-label">DESPUÉS DE PULSAR</span>
               <div className="preview-confetti" aria-hidden="true">◆ ● ■ ◆ ●</div>
+              <h3 className="programme-heading" lang="en">Learn more about the Spanish Programme at HKU</h3>
               <div className="preview-qr-stack">
                 <div className="preview-qr">
                   <QRCodeSVG value={PROGRAMME_URL} size={132} level="H" title="QR de Español en HKU" />

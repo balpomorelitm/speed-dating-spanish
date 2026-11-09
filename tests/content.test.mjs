@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { access, readFile } from "node:fs/promises";
 import test from "node:test";
+import { conversationCards } from "../src/data/content.ts";
 
 const app = await readFile(new URL("../src/SpeedDatingApp.tsx", import.meta.url), "utf8");
 const content = await readFile(new URL("../src/data/content.ts", import.meta.url), "utf8");
@@ -45,11 +46,12 @@ test("the revised catalogue has the agreed counts and wording", () => {
   const countriesBlock = content.match(/export const countries[\s\S]*?export const languages/)?.[0] ?? "";
   const languagesBlock = content.match(/export const languages[\s\S]*?export const residences/)?.[0] ?? "";
 
-  assert.equal(cardsBlock.match(/\bcard\("/g)?.length, 49);
+  assert.equal(conversationCards.length, 55);
+  assert.equal(new Set(conversationCards.map(({ id }) => id)).size, 55);
   assert.equal(countriesBlock.match(/flagImage: flagPath/g)?.length, 22);
   assert.equal(languagesBlock.match(/flagImage: flagPath/g)?.length, 22);
 
-  for (const removed of ["hacer senderismo", "las empanadas", "trabajar en grupo", "hacer un intercambio", "ir a la biblioteca", "el agua con gas", "ver el fútbol", "participar en clubes", "la música latina"]) {
+  for (const removed of ["hacer senderismo", "las empanadas", "las arepas", "el gazpacho", "trabajar en grupo", "hacer un intercambio", "ir a la biblioteca", "el agua con gas", "ver el fútbol", "participar en clubes", "la música latina"]) {
     assert.ok(!cardsBlock.includes(removed), `active cards still include: ${removed}`);
   }
   for (const replacement of ["el agua caliente", "estudiar", "la música"]) {
@@ -64,6 +66,79 @@ test("the revised catalogue has the agreed counts and wording", () => {
   assert.match(content, /card\("cake", "food", "la tarta de chocolate", "chocolate cake", ""\)/);
   assert.match(content, /card\("tortilla", "food", "la tortilla española", "Spanish omelette", ""\)/);
   assert.match(content, /card\("churros", "food", "los churros", "churros", "", "plural"\)/);
+});
+
+test("all existing card identifiers remain available", () => {
+  const originalIds = [
+    "music", "dance", "sing", "draw", "read", "cook", "photos", "travel", "shopping", "films", "series", "games",
+    "play-football", "tennis", "basketball", "swim", "run", "cycle",
+    "cake", "noodles", "rice", "fried-rice", "paella", "dim-sum", "sushi", "pizza", "tacos", "tortilla", "churros", "ice-cream",
+    "bubble-tea", "tea", "coffee", "orange-juice", "hot-chocolate", "hot-water",
+    "beach", "mountains", "cinema", "museums", "theme-parks", "victoria-peak", "cantopop", "kpop", "latin-music",
+    "study-spanish", "learn-languages", "friends", "study",
+  ];
+  const activeIds = new Set(conversationCards.map(({ id }) => id));
+  for (const id of originalIds) assert.ok(activeIds.has(id), `missing existing card: ${id}`);
+});
+
+test("the six approved cards have their agreed questions, translations and local photos", async () => {
+  const approvedCards = [
+    ["la Roja", "sports", "Spain’s national football team", "singular", "¿Te gusta la Roja?"],
+    ["Barcelona", "places", "Barcelona", "singular", "¿Te gusta Barcelona?"],
+    ["Machu Picchu", "places", "Machu Picchu", "singular", "¿Te gusta Machu Picchu?"],
+    ["las croquetas", "food", "croquettes", "plural", "¿Te gustan las croquetas?"],
+    ["el jamón ibérico", "food", "Iberian cured ham", "singular", "¿Te gusta el jamón ibérico?"],
+    ["la Universidad de Hong Kong", "campus", "The University of Hong Kong", "singular", "¿Te gusta la Universidad de Hong Kong?"],
+  ];
+  for (const [label, category, english, number, question] of approvedCards) {
+    const card = conversationCards.find((candidate) => candidate.label === label);
+    assert.ok(card, `missing approved card: ${label}`);
+    assert.equal(card.category, category);
+    assert.equal(card.english, english);
+    assert.equal(card.number, number);
+    assert.equal(`¿Te ${card.number === "plural" ? "gustan" : "gusta"} ${card.label}?`, question);
+    assert.equal(card.imageKind, "specific");
+    assert.match(card.image, /^photos\/cards\/[\w-]+\.webp$/);
+    assert.ok(card.alt.trim(), `missing alt text: ${label}`);
+    assert.ok(card.photoCredit.trim(), `missing credit: ${label}`);
+    assert.match(card.photoSource, /^https:\/\/commons\.wikimedia\.org\/wiki\/File:/);
+    await access(new URL(`../public/${card.image}`, import.meta.url));
+  }
+});
+
+test("drinks retain exactly the existing six cards", () => {
+  assert.deepEqual(
+    conversationCards.filter(({ category }) => category === "drinks").map(({ id, label, english }) => [id, label, english]),
+    [
+      ["bubble-tea", "el bubble tea", "bubble tea"],
+      ["tea", "el té", "tea"],
+      ["coffee", "el café", "coffee"],
+      ["orange-juice", "el zumo de naranja", "orange juice"],
+      ["hot-chocolate", "el chocolate caliente", "hot chocolate"],
+      ["hot-water", "el agua caliente", "hot water"],
+    ],
+  );
+});
+
+test("HKU attribution and programme headings are included in both QR views", async () => {
+  assert.match(app, /SPANISH LANGUAGE &(?:amp;)? CULTURE/);
+  assert.match(app, /Developed by the HKU SPANISH DEPARTMENT 💟/);
+  assert.match(app, /Learn more about the Spanish Programme at HKU/);
+  assert.match(catalogApp, /Learn more about the Spanish Programme at HKU/);
+  assert.doesNotMatch(app, /HKU · PUERTAS ABIERTAS/);
+  const logoPath = app.match(/src="(brand\/smlc[^"]+)"/)?.[1];
+  assert.ok(logoPath, "missing local SMLC logo on home screen");
+  await access(new URL(`../public/${logoPath}`, import.meta.url));
+});
+
+test("activity and teacher settings share the language rules without changing storage keys", () => {
+  assert.match(app, /from "\.\/lib\/languages"/);
+  for (const setter of ["setSelectedLanguages", "setProfileLanguages"]) {
+    assert.match(app, new RegExp(`${setter}\\(\\s*\\([^)]*\\)\\s*=>\\s*toggleLanguageSelection\\(`));
+  }
+  assert.match(app, /loadTeacherProfileState\(languages,\s*residences,\s*MAX_LANGUAGES\)/);
+  assert.match(app, /from "\.\/lib\/teacherProfiles"/);
+  assert.ok((app.match(/joinSpanish\(/g)?.length ?? 0) >= 3, "activity, teacher example and profile summary use the shared sentence formatter");
 });
 
 test("flags, specific photos and review controls are wired locally", async () => {

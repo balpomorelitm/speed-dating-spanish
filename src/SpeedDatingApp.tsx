@@ -11,6 +11,8 @@ import {
   type TouchEvent,
 } from "react";
 import { QRCodeSVG } from "qrcode.react";
+import { joinSpanish, MAX_LANGUAGES, toggleLanguageSelection } from "./lib/languages";
+import { loadTeacherProfileState, persistProfiles, type TeacherProfile } from "./lib/teacherProfiles";
 import {
   categories,
   conversationCards,
@@ -46,51 +48,6 @@ const reactions = [
 type CategoryFilter = "all" | CategoryId;
 type ReactionId = (typeof reactions)[number]["id"];
 type DeckState = { currentId: string; queue: string[]; round: number };
-type TeacherProfile = {
-  id: string;
-  name: string;
-  languageIds: string[];
-  residenceId: string | null;
-};
-
-const PROFILE_STORAGE_KEY = "speed-dating-teacher-profiles-v1";
-const ACTIVE_PROFILE_STORAGE_KEY = "speed-dating-active-teacher-profile-v1";
-
-const loadTeacherProfileState = (): {
-  profiles: TeacherProfile[];
-  activeProfile: TeacherProfile | null;
-} => {
-  if (typeof window === "undefined") return { profiles: [], activeProfile: null };
-  try {
-    const storedProfiles = JSON.parse(window.localStorage.getItem(PROFILE_STORAGE_KEY) ?? "[]") as unknown;
-    if (!Array.isArray(storedProfiles)) return { profiles: [], activeProfile: null };
-    const validLanguageIds = new Set(languages.map((language) => language.id));
-    const validResidenceIds = new Set(residences.map((place) => place.id));
-    const profiles = storedProfiles.flatMap((item): TeacherProfile[] => {
-      if (!item || typeof item !== "object") return [];
-      const candidate = item as Partial<TeacherProfile>;
-      if (typeof candidate.id !== "string" || typeof candidate.name !== "string") return [];
-      return [{
-        id: candidate.id,
-        name: candidate.name,
-        languageIds: Array.isArray(candidate.languageIds)
-          ? candidate.languageIds.filter((id): id is string => typeof id === "string" && validLanguageIds.has(id)).slice(0, 4)
-          : [],
-        residenceId: typeof candidate.residenceId === "string" && validResidenceIds.has(candidate.residenceId)
-          ? candidate.residenceId
-          : null,
-      }];
-    });
-    const activeId = window.localStorage.getItem(ACTIVE_PROFILE_STORAGE_KEY);
-    return {
-      profiles,
-      activeProfile: profiles.find((profile) => profile.id === activeId) ?? null,
-    };
-  } catch {
-    return { profiles: [], activeProfile: null };
-  }
-};
-
 const shuffle = <T,>(items: T[]) => {
   const copy = [...items];
   for (let index = copy.length - 1; index > 0; index -= 1) {
@@ -107,12 +64,6 @@ const makeDeck = (cards: ConversationCard[], round = 1): DeckState => {
     queue: shuffled.slice(1).map((card) => card.id),
     round,
   };
-};
-
-const joinSpanish = (items: string[]) => {
-  if (items.length === 0) return "…";
-  if (items.length === 1) return items[0];
-  return `${items.slice(0, -1).join(", ")} y ${items.at(-1)}`;
 };
 
 export default function SpeedDatingApp() {
@@ -214,21 +165,7 @@ export default function SpeedDatingApp() {
   };
 
   const toggleLanguage = (id: string) => {
-    setSelectedLanguages((current) => {
-      if (current.includes(id)) return current.filter((item) => item !== id);
-      if (current.length < 3) return [...current, id];
-      return [...current.slice(1), id];
-    });
-  };
-
-  const persistProfiles = (nextProfiles: TeacherProfile[], nextActiveId: string | null) => {
-    try {
-      window.localStorage.setItem(PROFILE_STORAGE_KEY, JSON.stringify(nextProfiles));
-      if (nextActiveId) window.localStorage.setItem(ACTIVE_PROFILE_STORAGE_KEY, nextActiveId);
-      else window.localStorage.removeItem(ACTIVE_PROFILE_STORAGE_KEY);
-    } catch {
-      // The app still works for the current session if private browsing blocks storage.
-    }
+    setSelectedLanguages((current) => toggleLanguageSelection(current, id));
   };
 
   const applyProfile = (profile: TeacherProfile) => {
@@ -258,11 +195,7 @@ export default function SpeedDatingApp() {
   };
 
   const toggleProfileLanguage = (id: string) => {
-    setProfileLanguages((current) => {
-      if (current.includes(id)) return current.filter((item) => item !== id);
-      if (current.length < 4) return [...current, id];
-      return [...current.slice(1), id];
-    });
+    setProfileLanguages((current) => toggleLanguageSelection(current, id));
   };
 
   const saveProfile = () => {
@@ -352,7 +285,7 @@ export default function SpeedDatingApp() {
 
   useEffect(() => {
     const timeoutId = window.setTimeout(() => {
-      const storedState = loadTeacherProfileState();
+      const storedState = loadTeacherProfileState(languages, residences, MAX_LANGUAGES);
       setProfiles(storedState.profiles);
       if (storedState.activeProfile) {
         setActiveProfileId(storedState.activeProfile.id);
@@ -475,7 +408,7 @@ export default function SpeedDatingApp() {
         {step === 0 && (
           <section className="welcome-screen screen-card">
             <div className="welcome-copy">
-              <div className="eyebrow"><span>HKU</span> · PUERTAS ABIERTAS</div>
+              <div className="eyebrow" lang="en"><span>SPANISH LANGUAGE &amp; CULTURE</span></div>
               <h1>
                 Speak Dating
                 <em>en español</em>
@@ -494,6 +427,10 @@ export default function SpeedDatingApp() {
               <div className="sticker sticker-one">¡VAMOS!</div>
               <div className="sticker sticker-two">HOLA</div>
             </div>
+            <footer className="welcome-attribution">
+              <img src="brand/smlc.png" width="1000" height="137" alt="School of Modern Languages and Cultures, The University of Hong Kong" />
+              <p lang="en">Developed by the HKU SPANISH DEPARTMENT 💟</p>
+            </footer>
           </section>
         )}
 
@@ -573,7 +510,7 @@ export default function SpeedDatingApp() {
                     })}
               </span>
               <div>
-                <small>ELIGE HASTA 3 · CHOOSE UP TO 3</small>
+                <small>ELIGE HASTA {MAX_LANGUAGES} · CHOOSE UP TO {MAX_LANGUAGES}</small>
                 <p>Hablo <strong>{joinSpanish(languageNames)}</strong></p>
               </div>
             </div>
@@ -769,6 +706,7 @@ export default function SpeedDatingApp() {
               ) : (
                 <div className="final-reveal" aria-live="polite">
                   <div className="final-answer"><span aria-hidden="true">👍👍</span> Sí, me gustan mucho.</div>
+                  <h3 className="programme-heading" lang="en">Learn more about the Spanish Programme at HKU</h3>
                   <div className="qr-grid">
                     <div className="qr-panel">
                       <a href={PROGRAMME_URL} target="_blank" rel="noreferrer" aria-label="Abrir Spanish Programme de HKU">
@@ -874,7 +812,7 @@ export default function SpeedDatingApp() {
                       />
                     </label>
                     <fieldset>
-                      <legend>Lenguas (hasta 4) · Languages (up to 4)</legend>
+                      <legend>Lenguas (hasta {MAX_LANGUAGES}) · Languages (up to {MAX_LANGUAGES})</legend>
                       <div className="profile-language-grid">
                         {languages.map((language) => (
                           <button
@@ -968,6 +906,8 @@ export default function SpeedDatingApp() {
                     Fotografías de {photoCredits.map((credit, index) => (
                       <span key={credit.file}>
                         <a href={credit.url} target="_blank" rel="noreferrer">{credit.author}</a>
+                        {credit.licenseUrl && <> (<a href={credit.licenseUrl} target="_blank" rel="noreferrer">licencia</a>)</>}
+                        {credit.changes && <> — {credit.changes}</>}
                         {index < photoCredits.length - 1 ? ", " : "."}
                       </span>
                     ))}

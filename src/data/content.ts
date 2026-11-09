@@ -202,6 +202,42 @@ const specificPhotos: Record<
     photoCredit: "NNNH · Wikimedia Commons · CC BY-SA 4.0",
     photoSource: "https://commons.wikimedia.org/wiki/File:Hong_Kong_Disneyland_Castle_in_2024-08.jpg",
   },
+  "la-roja": {
+    image: "photos/cards/la-roja.webp",
+    alt: "La selección española de fútbol posa antes de un partido contra Chile",
+    photoCredit: "Clément Bucco-Lechat · Wikimedia Commons · CC BY-SA 3.0",
+    photoSource: "https://commons.wikimedia.org/wiki/File:Spain_-_Chile_-_10-09-2013_-_Geneva_-_Spain_team_1.jpg",
+  },
+  barcelona: {
+    image: "photos/cards/barcelona.webp",
+    alt: "La Sagrada Familia y los edificios de Barcelona vistos desde el Parc Güell",
+    photoCredit: "Julian Lupyan · Wikimedia Commons · CC0 1.0",
+    photoSource: "https://commons.wikimedia.org/wiki/File:Sagrada_Fam%C3%ADlia,_Barcelona.jpg",
+  },
+  "machu-picchu": {
+    image: "photos/cards/machu-picchu.webp",
+    alt: "Vista panorámica de las ruinas de Machu Picchu entre montañas verdes",
+    photoCredit: "Roger Canals · Wikimedia Commons · CC0 1.0",
+    photoSource: "https://commons.wikimedia.org/wiki/File:Machu_Picchu_(234745681).jpeg",
+  },
+  croquetas: {
+    image: "photos/cards/croquetas.webp",
+    alt: "Un plato de croquetas doradas",
+    photoCredit: "Juan Emilio Prades Bel · Wikimedia Commons · CC BY 4.0",
+    photoSource: "https://commons.wikimedia.org/wiki/File:Croquetas.jpg",
+  },
+  "jamon-iberico": {
+    image: "photos/cards/jamon-iberico.webp",
+    alt: "Lonchas de jamón ibérico de bellota servidas en un plato",
+    photoCredit: "Cantabrucu · Wikimedia Commons · CC0 1.0",
+    photoSource: "https://commons.wikimedia.org/wiki/File:Jamon_iberico_de_bellota_(cinco_jotas).jpg",
+  },
+  hku: {
+    image: "photos/cards/hku.webp",
+    alt: "El Main Building de la Universidad de Hong Kong con su torre del reloj",
+    photoCredit: "Emcc83 · Wikimedia Commons · CC BY-SA 4.0",
+    photoSource: "https://commons.wikimedia.org/wiki/File:The_university_of_hong_kong_01.jpg",
+  },
 };
 
 const stickerImages: Partial<Record<string, string[]>> = {
@@ -251,6 +287,7 @@ export const conversationCards: ConversationCard[] = [
   card("swim", "sports", "nadar", "swimming", "🏊"),
   card("run", "sports", "correr", "running", "🏃"),
   card("cycle", "sports", "montar en bicicleta", "cycling", "🚲"),
+  card("la-roja", "sports", "la Roja", "Spain’s national football team", ""),
 
   card("cake", "food", "la tarta de chocolate", "chocolate cake", ""),
   card("noodles", "food", "los noodles / fideos", "noodles", "🍜", "plural"),
@@ -264,6 +301,8 @@ export const conversationCards: ConversationCard[] = [
   card("tortilla", "food", "la tortilla española", "Spanish omelette", ""),
   card("churros", "food", "los churros", "churros", "", "plural"),
   card("ice-cream", "food", "el helado", "ice cream", "🍦"),
+  card("croquetas", "food", "las croquetas", "croquettes", "", "plural"),
+  card("jamon-iberico", "food", "el jamón ibérico", "Iberian cured ham", ""),
 
   card("bubble-tea", "drinks", "el bubble tea", "bubble tea", "🧋"),
   card("tea", "drinks", "el té", "tea", "🍵"),
@@ -281,11 +320,14 @@ export const conversationCards: ConversationCard[] = [
   card("cantopop", "places", "el Cantopop", "Cantopop", "🎶"),
   card("kpop", "places", "el K-pop", "K-pop", "✨"),
   card("latin-music", "places", "la música", "music", "🎶"),
+  card("barcelona", "places", "Barcelona", "Barcelona", ""),
+  card("machu-picchu", "places", "Machu Picchu", "Machu Picchu", ""),
 
   card("study-spanish", "campus", "estudiar español", "studying Spanish", ""),
   card("learn-languages", "campus", "aprender idiomas", "learning languages", ""),
   card("friends", "campus", "hacer amigos", "making friends", "🤝"),
   card("study", "campus", "estudiar", "studying", "📖"),
+  card("hku", "campus", "la Universidad de Hong Kong", "The University of Hong Kong", ""),
 ];
 
 const flagPath = (code: string) => `flags/${code}.svg`;
@@ -383,7 +425,15 @@ export const finalCardAsset = {
   photoSource: "https://commons.wikimedia.org/wiki/File:Chupa_Chups_logo.svg",
 };
 
-export const photoCredits = [
+export type PhotoCredit = {
+  file: string;
+  author: string;
+  url: string;
+  licenseUrl?: string;
+  changes?: string;
+};
+
+export const photoCredits: PhotoCredit[] = [
   { file: "hobbies.jpg", author: "Thomas Martinsen", url: "https://unsplash.com/photos/CrnALaUMSA4" },
   { file: "sports.jpg", author: "Souza Sergio", url: "https://unsplash.com/photos/MVNSFzkaxOE" },
   { file: "food.jpg", author: "Hailey Tong", url: "https://unsplash.com/photos/_stQKOlfl7M" },
@@ -400,6 +450,48 @@ export const photoCredits = [
   { file: "orange-juice.webp", author: "Umut Dağlı · Pexels", url: "https://www.pexels.com/photo/orange-juice-in-clear-drinking-glass-12896835/" },
   { file: "hot-chocolate.webp", author: "Polina Tankilevitch · Pexels", url: "https://www.pexels.com/photo/hot-chocolate-with-marshmallows-in-mug-5419231/" },
   { file: "theme-parks.webp", author: "NNNH · Wikimedia Commons · CC BY-SA 4.0", url: "https://commons.wikimedia.org/wiki/File:Hong_Kong_Disneyland_Castle_in_2024-08.jpg" },
+  {
+    file: "la-roja.webp",
+    author: "Clément Bucco-Lechat · Wikimedia Commons · CC BY-SA 3.0",
+    url: "https://commons.wikimedia.org/wiki/File:Spain_-_Chile_-_10-09-2013_-_Geneva_-_Spain_team_1.jpg",
+    licenseUrl: "https://creativecommons.org/licenses/by-sa/3.0/",
+    changes: "Redimensionada y convertida a WebP; sin recorte. La imagen derivada conserva CC BY-SA 3.0.",
+  },
+  {
+    file: "barcelona.webp",
+    author: "Julian Lupyan · Wikimedia Commons · CC0 1.0",
+    url: "https://commons.wikimedia.org/wiki/File:Sagrada_Fam%C3%ADlia,_Barcelona.jpg",
+    licenseUrl: "https://creativecommons.org/publicdomain/zero/1.0/",
+    changes: "Redimensionada y convertida a WebP; sin recorte.",
+  },
+  {
+    file: "machu-picchu.webp",
+    author: "Roger Canals · Wikimedia Commons · CC0 1.0",
+    url: "https://commons.wikimedia.org/wiki/File:Machu_Picchu_(234745681).jpeg",
+    licenseUrl: "https://creativecommons.org/publicdomain/zero/1.0/",
+    changes: "Redimensionada y convertida a WebP; sin recorte.",
+  },
+  {
+    file: "croquetas.webp",
+    author: "Juan Emilio Prades Bel · Wikimedia Commons · CC BY 4.0",
+    url: "https://commons.wikimedia.org/wiki/File:Croquetas.jpg",
+    licenseUrl: "https://creativecommons.org/licenses/by/4.0/",
+    changes: "Redimensionada y convertida a WebP; sin recorte.",
+  },
+  {
+    file: "jamon-iberico.webp",
+    author: "Cantabrucu · Wikimedia Commons · CC0 1.0",
+    url: "https://commons.wikimedia.org/wiki/File:Jamon_iberico_de_bellota_(cinco_jotas).jpg",
+    licenseUrl: "https://creativecommons.org/publicdomain/zero/1.0/",
+    changes: "Redimensionada y convertida a WebP; sin recorte.",
+  },
+  {
+    file: "hku.webp",
+    author: "Emcc83 · Wikimedia Commons · CC BY-SA 4.0",
+    url: "https://commons.wikimedia.org/wiki/File:The_university_of_hong_kong_01.jpg",
+    licenseUrl: "https://creativecommons.org/licenses/by-sa/4.0/",
+    changes: "Redimensionada y convertida a WebP; sin recorte. La imagen derivada conserva CC BY-SA 4.0.",
+  },
 ];
 
 export const flagCredit = {
